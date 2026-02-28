@@ -8,7 +8,9 @@ class Dialogue_Manger:
 
     def get_dialogue_node(self, node_id):
         dialogue = self.get_dialogue(node_id)[0]
-        
+        next_nodes = self.get_next_nodes(node_id)
+        next_nodes_data = [item[0] for item in next_nodes]
+
         key_words = self.get_key_words(dialogue[1])
         key_words_data = []
         for key_word in key_words:
@@ -39,10 +41,11 @@ class Dialogue_Manger:
                 "text": dialogue[2],
                 "translation": dialogue[3],
                 "audio": dialogue[4],
-                "npc": dialogue[5],
+                "npc_id": dialogue[5],
                 "key_words": key_words_data
             },
-            "options": options_data
+            "options": options_data,
+            "next_nodes": next_nodes_data
         }
     
     def get_node_options(self, node_id):
