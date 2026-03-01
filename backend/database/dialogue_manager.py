@@ -1,10 +1,12 @@
+import os
 from database.sql_db import SQL_DB
+
 
 class Dialogue_Manger:
     def __init__(self, mode):
-        if mode == 1:
-            db_name = "test_data"
-        self.db = SQL_DB(path="./database/", db_name=db_name)
+        db_name = "test_data" if mode == 1 else "production"
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+        self.db = SQL_DB(path=base_dir + "/", db_name=db_name)
 
     def get_dialogue_node(self, node_id):
         dialogue = self.get_dialogue(node_id)[0]
