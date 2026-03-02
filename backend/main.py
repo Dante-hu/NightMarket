@@ -1,12 +1,14 @@
 from flask import Flask, request, jsonify
-from database.dialogue_manager import Dialogue_Manger
+from backend.managers.dialogue_manager import Dialogue_Manager
+from backend.managers.vendor_manager import Vendor_Manager
 import base64
 
 class App:
     def __init__(self, mode):
         self.app_mode = mode
         self.app = Flask(import_name="Hokkien Game")
-        self.dialogue_manager = Dialogue_Manger(mode)
+        self.dialogue_manager = Dialogue_Manager(mode)
+        self.vendor_manager = Vendor_Manager(mode)
         
     def run(self):
         print("\nStarting Flask app...")
@@ -297,16 +299,15 @@ def select_launch_mode():
     prompt = '''
 Select launch mode...
         
-> Press a | Launch in default mode
-> Press s | Launch in test mode
+> Press 0 | Launch in default mode
+> Press 1 | Launch in test mode
 '''      
     mode = input(prompt)
     match mode:
-        case "a":
+        case "0", _:
             return 0
-        case "s":
+        case "1":
             return 1
-            
 
 if __name__ == "__main__":
     mode = select_launch_mode()
