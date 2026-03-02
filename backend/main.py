@@ -1,43 +1,20 @@
 from flask import Flask, request, jsonify
-from backend.managers.dialogue_manager import Dialogue_Manager
-from backend.managers.vendor_manager import Vendor_Manager
+from database.hok_db import Hok_DB
+from managers.dialogue_manager import Dialogue_Manager
+from managers.vendor_manager import Vendor_Manager
 import base64
+import sys
 
 class App:
     def __init__(self, mode):
         self.app_mode = mode
-        self.app = Flask(import_name="Hokkien Game")
         self.dialogue_manager = Dialogue_Manager(mode)
         self.vendor_manager = Vendor_Manager(mode)
+        self.app = Flask(import_name="Hokkien Game")
+
         
     def run(self):
         print("\nStarting Flask app...")
-      
-        #local mock data + graph style dialogue test 
-       
-        VENDORS = {
-            1: {
-                "id": 1,
-                "name": "Bubble Tea Stall",
-                "specialty": "Bubble Tea",
-                "personality": {
-                    "politeness": 0.9,
-                    "friendliness": 0.8,
-                    "dialect": "Tâi-lâm"
-                }
-            },
-            2: {
-                "id": 2,
-                "name": "Oyster Omelette Stall",
-                "specialty": "Oyster Omelette",
-                "personality": {
-                    "politeness": 0.7,
-                    "friendliness": 0.6,
-                    "dialect": "Tâi-pak"
-                }
-            }
-        }
-
         #mock data for contract apis
         MOCK_USER_STATS = {
             "u123": {
@@ -52,41 +29,6 @@ class App:
                 "preferred_language": "hokkien"
             }
         }
-
-        # mock vendor profile from api testing
-        MOCK_VENDOR_PROFILES = {
-            "v001": {
-                "vendor_id": "v001",
-                "name": "A-Ging's Bubble Tea",
-                "inventory": [
-                    {
-                        "item_id": "item_01",
-                        "name": "Classic Milk Tea",
-                        "base_price": 50
-                    },
-                    {
-                        "item_id": "item_02",
-                        "name": "Taro Milk Tea",
-                        "base_price": 60
-                    }
-                ],
-                "starting_node_id": "intro_001"
-            }
-        }
-
-        @self.app.route("/vendors", methods=["GET"])
-        def get_vendors():
-            return jsonify({
-                "status": "success",
-                "vendors": list(VENDORS.values())
-            }), 200
-
-        @self.app.route("/vendors/<int:vendor_id>", methods=["GET"])
-        def get_vendor(vendor_id):
-            vendor = VENDORS.get(vendor_id)
-            if not vendor:
-                return jsonify({"status": "error", "message": "Vendor not found"}), 404
-            return jsonify({"status": "success", "vendor": vendor}), 200
 
         @self.app.route("/api/v1/user/<user_id>/stats", methods=["GET"])
         def api_get_user_stats(user_id):
@@ -103,16 +45,18 @@ class App:
             return jsonify(user), 200
 
         @self.app.route("/api/v1/vendors/<vendor_id>", methods=["GET"])
-        def api_get_vendor_profile(vendor_id):
-            vendor = MOCK_VENDOR_PROFILES.get(vendor_id)
-            if not vendor:
-                return jsonify({"error": "Vendor not found"}), 404
-            return jsonify(vendor), 200
+        def get_vendor_profile(vendor_id):
+            vendor_data = self.vendor_manager
+
+            return jsonify({
+                "status": "success",
+                "data": vendor_data,
+                "meta": {"processTimeMS": 123}
+            }), 200
 
         @self.app.route("/api/v1/dialogue/<node_id>", methods=["GET"])
         def get_dialogue_node(node_id):
             node_data = self.dialogue_manager.get_dialogue_node(node_id)
-            print(node_data)
             
             return jsonify({
                 "status": "success",
@@ -304,10 +248,12 @@ Select launch mode...
 '''      
     mode = input(prompt)
     match mode:
-        case "0", _:
+        case "0":
             return 0
         case "1":
             return 1
+        case _:
+            raise Exception("Error, mode selected is invalid.") 
 
 if __name__ == "__main__":
     mode = select_launch_mode()

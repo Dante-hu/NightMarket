@@ -1,19 +1,8 @@
-from database.sql_db import SQL_DB
+from database.hok_db import Hok_DB
 
-class Dialogue_Manager:
+class Dialogue_Manager(Hok_DB):
     def __init__(self, mode):
-        self.mode = mode
-        self.db_name = self.set_name(self.mode)
-        self.db = SQL_DB(path="./database/", db_name=self.db_name)
-
-    def set_name(self, mode):
-        match mode:
-            case 0:
-                return "dialogue_data"
-            case 1:
-                return "dialogue_test_data"
-            case _:
-                raise Exception("Error mode selected is invalid") 
+        super().__init__(mode)
 
     def get_dialogue_node(self, node_id):
         dialogue = self.get_dialogue(node_id)[0]
@@ -76,14 +65,3 @@ class Dialogue_Manager:
     def get_key_words(self, dialogue_id):
         command = "SELECT * FROM words WHERE dialogue_id='%s'" % dialogue_id
         return self.db.get_data(command)
-
-    def create_db(self):
-        self.db.create_table("dialogue_nodes", "node_id TEXT, parent_node_id TEXT, npc_id TEXT")
-        self.db.create_table("npcs", "npc_id TEXT, npc_name TEXT")
-        self.db.create_table("items", "item_id TEXT, name TEXT, description TEXT, value INTEGER")
-
-        self.db.create_table("dialogues", "node_id TEXT, dialogue_id TEXT, dialogue TEXT, translation TEXT, audio_clip TEXT, npc_id TEXT")
-        self.db.create_table("words", "dialogue_id TEXT, word_id TEXT, word TEXT, translation TEXT, conTEXT TEXT, audio_clip TEXT")
-
-        self.db.create_table("options", "node_id TEXT, option_id TEXT, option_TEXT TEXT, next_node_id TEXT, feedback_type TEXT")
-        self.db.create_table("events", "option_id TEXT, event_id TEXT, event_type TEXT, metadata TEXT")

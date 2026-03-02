@@ -1,20 +1,34 @@
-from database.sql_db import SQL_DB
+from database.hok_db import Hok_DB
 
-class Vendor_Manager:
+class Vendor_Manager(Hok_DB):
     def __init__(self, mode):
-        self.mode = mode
-        self.db_name = self.set_name(self.mode)
-        self.db = SQL_DB(path="./database/", db_name=self.db_name)
+        super().__init__(mode)
 
-    def set_name(self, mode):
-        match mode:
-            case 0:
-                return "vendor_data"
-            case 1:
-                return "vendor_test_data"
-            case _:
-                raise Exception("Error mode selected is invalid") 
+    def get_vendor_profile(self, vendor_id):
+        vendor = self.get_vendor(vendor_id)[0]
+        dialogue_node_id = vendor[1]
+        vendor_name = vendor[3]
+        item_data = self.get_items()
+        items = []
+        for item in item_data:
+            items.append({
+                "item_id": item[1],
+                "item_name": item[2],
+                "description": item[3],
+                "item_value": item[4]
+            })
 
-    def create_db(self):
-        self.db.create_table("vendors", "vendor_id TEXT, dialogue_node_id TEXT vendor TEXT")
-        self.db.create_table("items", "vendor_id TEXT, item_id TEXT, name TEXT, description TEXT, value INTEGER")
+        return {
+            "vendor_id": vendor_id,
+            "dialogue_node_id": dialogue_node_id,
+            "vendor_name": vendor_name,
+            "items": items,
+        }
+        
+    def get_vendor(self, vendor_id):
+        command = "SELECT * FROM vendors WHERE vendor_id='%s'" % vendor_id
+        return self.db.get_data(command)
+
+    def get_items(self, vendor_id):
+        command = "SELECT * FROM items WHERE vendor_id='%s'" % vendor_id
+        return self.db.get_data(command)
