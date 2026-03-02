@@ -68,7 +68,7 @@ class App:
                         "base_price": 60
                     }
                 ],
-                "starting_node_id": "intro_001"
+                "starting_node_id": "n_004"
             }
         }
 
