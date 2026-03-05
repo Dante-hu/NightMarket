@@ -5,23 +5,24 @@ class Hok_DB:
     def __init__(self, mode):
         self.mode = mode
         self.db_name = self.get_name(self.mode)
-        self.db = self.connect()        
+        self.base_dir = os.path.dirname(os.path.abspath(__file__)) + "/"
+        self.db = self.connect()      
 
     def get_name(self, mode):
         match mode:
             case 0:
                 return "hok_data"
             case 1:
-                return "hok_test_data"
+                return "test_data"
             case _:
                 raise Exception("Error, mode selected is invalid.") 
             
     def connect(self):
-        if not os.path.isfile("./database/" + self.db_name + ".db"): 
+        if not os.path.isfile(self.base_dir + self.db_name + ".db"): 
             raise Exception("Database file not found.")
             
         print("Connecting file: ./database/" + self.db_name + ".db")
-        return SQL_DB(path="./database/", db_name=self.db_name)
+        return SQL_DB(path=self.base_dir, db_name=self.db_name)
 
 
     def create_tables(self):

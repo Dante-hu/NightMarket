@@ -46,7 +46,7 @@ class App:
 
         @self.app.route("/api/v1/vendors/<vendor_id>", methods=["GET"])
         def get_vendor_profile(vendor_id):
-            vendor_data = self.vendor_manager
+            vendor_data = self.vendor_manager.get_dialogue_node(vendor_id)
 
             return jsonify({
                 "status": "success",
