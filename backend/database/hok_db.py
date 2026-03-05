@@ -1,4 +1,4 @@
-from database.sql_db import SQL_DB
+from .sql_db import SQL_DB
 import os
 
 class Hok_DB:
@@ -15,7 +15,7 @@ class Hok_DB:
         if not os.path.isfile(self.base_dir + self.db_name + ".db"): 
             raise Exception("Database file not found.")
             
-        print("Connecting file: " + self.base_dir + " " + self.db_name + ".db")
+        print("Connecting file: " + self.base_dir + self.db_name + ".db")
         return SQL_DB(path=self.base_dir, db_name=self.db_name)
     
     def get_name(self, mode):
@@ -23,7 +23,7 @@ class Hok_DB:
             case 0:
                 return "hok_data"
             case 1:
-                return "test_data"
+                return "hok_test_data"
             case _:
                 raise Exception("Error, mode selected is invalid.") 
 
@@ -33,7 +33,7 @@ class Hok_DB:
         self.db.create_table("npcs", "npc_id TEXT, npc_name TEXT")
 
         self.db.create_table("dialogues", "node_id TEXT, dialogue_id TEXT, dialogue TEXT, translation TEXT, audio_clip TEXT, npc_id TEXT")
-        self.db.create_table("words", "dialogue_id TEXT, word_id TEXT, word TEXT, translation TEXT, conTEXT TEXT, audio_clip TEXT")
+        #self.db.create_table("words", "dialogue_id TEXT, word_id TEXT, word TEXT, translation TEXT, conTEXT TEXT, audio_clip TEXT")
 
         self.db.create_table("options", "node_id TEXT, option_id TEXT, option_TEXT TEXT, next_node_id TEXT, feedback_type TEXT")
         self.db.create_table("events", "option_id TEXT, event_id TEXT, event_type TEXT, metadata TEXT")
@@ -41,3 +41,5 @@ class Hok_DB:
         self.db.create_table("vendors", "vendor_id TEXT, node_id TEXT, npc_id TEXT, vendor_name TEXT")
         self.db.create_table("items", "vendor_id TEXT, item_id TEXT, item_name TEXT, item_description TEXT, item_value INTEGER")
 
+    def insert(self, table_name, data):
+        self.db.insert(table_name, data)
