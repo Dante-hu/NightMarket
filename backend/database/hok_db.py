@@ -2,12 +2,22 @@ from database.sql_db import SQL_DB
 import os
 
 class Hok_DB:
-    def __init__(self, mode):
+    def __init__(self, mode=1):
         self.mode = mode
+        self.db_name = None
+        self.base_dir = None
+        self.db = None
+            
+    def connect(self):
         self.db_name = self.get_name(self.mode)
         self.base_dir = os.path.dirname(os.path.abspath(__file__)) + "/"
-        self.db = self.connect()      
 
+        if not os.path.isfile(self.base_dir + self.db_name + ".db"): 
+            raise Exception("Database file not found.")
+            
+        print("Connecting file: " + self.base_dir + " " + self.db_name + ".db")
+        return SQL_DB(path=self.base_dir, db_name=self.db_name)
+    
     def get_name(self, mode):
         match mode:
             case 0:
@@ -16,15 +26,8 @@ class Hok_DB:
                 return "test_data"
             case _:
                 raise Exception("Error, mode selected is invalid.") 
-            
-    def connect(self):
-        if not os.path.isfile(self.base_dir + self.db_name + ".db"): 
-            raise Exception("Database file not found.")
-            
-        print("Connecting file: " + self.base_dir + " " + self.db_name + ".db")
-        return SQL_DB(path=self.base_dir, db_name=self.db_name)
 
-
+    # temp function used for creating initial db, should not be used at all in prod
     def create_tables(self):
         self.db.create_table("dialogue_nodes", "node_id TEXT, parent_node_id TEXT, npc_id TEXT")
         self.db.create_table("npcs", "npc_id TEXT, npc_name TEXT")

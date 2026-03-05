@@ -6,14 +6,22 @@ import base64
 import sys
 
 class App:
-    def __init__(self, mode):
-        self.app_mode = mode
-        self.dialogue_manager = Dialogue_Manager(mode)
-        self.vendor_manager = Vendor_Manager(mode)
+    def __init__(self, mode=1):
+        self.mode = mode
+        self.dialogue_manager = None
+        self.vendor_manager = None
+        self.app = None
+
+    def run(self):
+        self.create_app()
+        self.create_endpoints()
+
+    def create_app(self):
+        self.dialogue_manager = Dialogue_Manager(self.mode)
+        self.vendor_manager = Vendor_Manager(self.mode)
         self.app = Flask(import_name="Hokkien Game")
 
-        
-    def run(self):
+    def create_endpoints(self):
         print("\nStarting Flask app...")
         #mock data for contract apis
         MOCK_USER_STATS = {
@@ -69,7 +77,7 @@ class App:
             request_body = request.get_json()
             input_text = request_body.get("input_text")
 
-            if self.app_mode == "test_mode":
+            if self.mode == "test_mode":
                 english_text = chinese_text = hokkien_text = "this output is a test output"
             else:
                 english_text = chinese_text = hokkien_text = "calls model api for translation"
@@ -93,7 +101,7 @@ class App:
             model_parameters = request_body.get("parameters")
             input_text = request_body.get("input_text")
 
-            model_out = "this output is a test output" if self.app_mode == "test_mode" else "calls model api for translation"
+            model_out = "this output is a test output" if self.mode == "test_mode" else "calls model api for translation"
             
             return jsonify({
                 "status": "success",
@@ -114,7 +122,7 @@ class App:
             output_lang = request_body.get("output_lang")
             input_text = request_body.get("input_text")
 
-            romanized_text = "this output is a test output" if self.app_mode == "test_mode" else "calls model api for romanization"
+            romanized_text = "this output is a test output" if self.mode == "test_mode" else "calls model api for romanization"
 
             return jsonify({
                 "status": "success",
@@ -138,7 +146,7 @@ class App:
             high_noise_frac = request_body.get("high_noise_frac")
             base64_string = request_body.get("base64_string")
             
-            generate_image = "this output is a test output" if self.app_mode == "test_mode" else "calls model api for image generation"
+            generate_image = "this output is a test output" if self.mode == "test_mode" else "calls model api for image generation"
 
             return jsonify({
                 "status": "success",
@@ -161,7 +169,7 @@ class App:
             source_lang = request_body.get("source_lang")
             output_lang = request_body.get("output_lang")
 
-            numeric_tones = "this output is a test output" if self.app_mode == "test_mode" else "calls model api for numeric tones"
+            numeric_tones = "this output is a test output" if self.mode == "test_mode" else "calls model api for numeric tones"
 
             return jsonify({
                 "status": "success",
@@ -181,7 +189,7 @@ class App:
             source_lang = request_body.get("source_lang")
             output_lang = request_body.get("output_lang")
 
-            audio_url = "this output is a test output" if self.app_mode == "test_mode" else "aaaa"
+            audio_url = "this output is a test output" if self.mode == "test_mode" else "aaaa"
 
             return jsonify({
                 "status": "success",
@@ -201,7 +209,7 @@ class App:
             source_lang = request_body.get("source_lang")
             output_lang = request_body.get("output_lang")
 
-            audio_blob = "this output is a test output" if self.app_mode == "test_mode" else "aaaa"
+            audio_blob = "this output is a test output" if self.mode == "test_mode" else "aaaa"
 
             return jsonify({
                 "status": "success",

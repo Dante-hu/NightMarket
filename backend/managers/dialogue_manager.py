@@ -3,6 +3,7 @@ from database.hok_db import Hok_DB
 class Dialogue_Manager(Hok_DB):
     def __init__(self, mode):
         super().__init__(mode)
+        self.db = self.connect()
 
     def get_dialogue_node(self, node_id):
         dialogue = self.get_dialogue(node_id)[0]

@@ -3,6 +3,7 @@ from database.hok_db import Hok_DB
 class Vendor_Manager(Hok_DB):
     def __init__(self, mode):
         super().__init__(mode)
+        self.db = self.connect()
 
     def get_vendor_profile(self, vendor_id):
         vendor = self.get_vendor(vendor_id)[0]
