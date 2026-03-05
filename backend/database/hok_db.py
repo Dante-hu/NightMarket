@@ -21,7 +21,7 @@ class Hok_DB:
         if not os.path.isfile(self.base_dir + self.db_name + ".db"): 
             raise Exception("Database file not found.")
             
-        print("Connecting file: ./database/" + self.db_name + ".db")
+        print("Connecting file: " + self.base_dir + " " + self.db_name + ".db")
         return SQL_DB(path=self.base_dir, db_name=self.db_name)
 
 
