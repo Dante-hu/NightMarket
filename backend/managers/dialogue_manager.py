@@ -24,7 +24,7 @@ class Dialogue_Manager(Hok_DB):
         options = self.get_node_options(node_id)
         options_data = []
         for option in options:
-            event = self.get_node_options(option[1])
+            event = self.get_option_events(option[1])
             options_data.append({
                 "option_id": option[1],
                 "text": option[2],
@@ -52,7 +52,7 @@ class Dialogue_Manager(Hok_DB):
         return self.db.get_data(command)
     
     def get_option_events(self, option_id):
-        command = "SELECT * FROM events WHERE node_id='%s'" % option_id
+        command = "SELECT * FROM events WHERE option_id='%s'" % option_id
         return self.db.get_data(command)
 
     def get_next_nodes(self, parent_node_id):
