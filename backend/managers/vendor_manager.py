@@ -9,7 +9,7 @@ class Vendor_Manager(Hok_DB):
         vendor = self.get_vendor(vendor_id)[0]
         dialogue_node_id = vendor[1]
         vendor_name = vendor[3]
-        item_data = self.get_items()
+        item_data = self.get_items(vendor_id)
         items = []
         for item in item_data:
             items.append({
