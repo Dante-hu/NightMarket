@@ -54,6 +54,23 @@ class App:
 
         @self.app.route("/api/v1/vendors/<vendor_id>", methods=["GET"])
         def get_vendor_profile(vendor_id):
+            """Gets the dialogue node given the node id
+        
+            Args:
+                node_id: Id of dialogue node
+                
+            Returns:
+                {
+                    "status": "success",
+                    "data": {
+                        "vendor_id": "vendor_id",
+                        "dialogue_node_id": "dialogue_node_id",
+                        "vendor_name": "vendor_name",
+                        "items": [items],
+                    },
+                    "meta": {"processTimeMS": 123}
+                }
+            """
             vendor_data = self.vendor_manager.get_vendor_profile(vendor_id)
 
             return jsonify({
@@ -64,6 +81,45 @@ class App:
 
         @self.app.route("/api/v1/dialogue/<node_id>", methods=["GET"])
         def get_dialogue_node(node_id):
+            """Gets the dialogue node given the node id
+        
+            Args:
+                node_id: Id of dialogue node
+                
+            Returns:
+                {
+                    "status": "success",
+                    "data": {
+                        "dialogue_node": "node_id",
+                        "dialogue": {
+                            "dialogue_id": "id of dialogue",
+                            "text": "text of the dialogue",
+                            "translation": "translation of the text",
+                            "audio": "audio of the text",
+                            "npc_id": "id of npc dialogue belongs to",
+                            "key_words": [{
+                                "word_id": "id of word",
+                                "word": "word",
+                                "translation": "translation of word",
+                                "context": "context of word",
+                                "audio": "audio of word"
+                            }]
+                        },
+                        "options": [{
+                            "option_id": "id of options",
+                            "text": "text of the option",
+                            "next_node": "node to the next dialogue node",
+                            "feedback_type": "feedback type of option",
+                            "event": "event"
+                        }],
+                        "next_nodes": [
+                            "array of next nodes",
+                            "Note: should only be used if the dialogue is not branching"
+                        ]
+                    }
+                    "meta": {"processTimeMS": 123}
+                }
+            """
             node_data = self.dialogue_manager.get_dialogue_node(node_id)
             
             return jsonify({
@@ -74,6 +130,21 @@ class App:
         
         @self.app.route("/api/v1/dialogue/root-nodes/<npc_id>")
         def get_dialogue_root_nodes(npc_id):
+            """Gets all the root dialogue nodes that are related to given npc 
+        
+            Args:
+                npc_id: Id of npc
+                
+            Returns:
+                {
+                    "status": "success",
+                    "data": {
+                        "npc_id": "npc_id",
+                        "root_node_ids": ["ids of root node"]
+                    },
+                    "meta": {"processTimeMS": 123}
+                }
+            """
             node_data = self.dialogue_manager.get_dialogue_root_nodes(npc_id)
             
             return jsonify({
