@@ -71,6 +71,16 @@ class App:
                 "data": node_data,
                 "meta": {"processTimeMS": 123}
             }), 200
+        
+        @self.app.route("/api/v1/dialogue/root-nodes/<npc_id>")
+        def get_dialogue_root_nodes(npc_id):
+            node_data = self.dialogue_manager.get_dialogue_root_nodes(npc_id)
+            
+            return jsonify({
+                "status": "success",
+                "data": node_data,
+                "meta": {"processTimeMS": 123}
+            }), 200
 
         @self.app.route("/api/v1/generate/sentences", methods=["POST"])
         def fetch_sentences():

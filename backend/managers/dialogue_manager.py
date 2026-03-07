@@ -47,6 +47,22 @@ class Dialogue_Manager(Hok_DB):
             "next_nodes": next_nodes_data
         }
     
+    def get_dialogue_root_nodes(self, npc_id):
+        root_nodes = self.get_root_nodes(npc_id)[0]
+        root_node_ids = []
+        for root_node in root_nodes:
+            root_node_ids.append(root_node)
+
+        return {
+            "npc_id": npc_id,
+            "root_node_ids": root_node_ids
+        }
+
+    def get_root_nodes(self, npc_id):
+        command = "SELECT node_id FROM dialogue_nodes " \
+            "WHERE parent_node_id='%s' AND npc_id='%s'" % ("n_000", npc_id)
+        return self.db.get_data(command)
+
     def get_node_options(self, node_id):
         command = "SELECT * FROM options WHERE node_id='%s'" % node_id
         return self.db.get_data(command)
