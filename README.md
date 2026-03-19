@@ -1,6 +1,6 @@
 # NightMarket Backend
 
-A Python Flask backend for the NightMarket Taiwanese Hokkien language learning game.
+A Python Flask backend for the NightMarket Taiwanese Hokkien language learning game world.
 
 ---
 
