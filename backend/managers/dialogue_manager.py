@@ -24,13 +24,20 @@ class Dialogue_Manager(Hok_DB):
         options = self.get_node_options(node_id)
         options_data = []
         for option in options:
-            event = self.get_option_events(option[1])
+            events = self.get_option_events(option[1])
+            events_data = []
+            for evt in events:
+                events_data.append({
+                    "event_id": evt[1],
+                    "event_type": evt[2],
+                    "metadata": evt[3]
+                })
             options_data.append({
                 "option_id": option[1],
                 "text": option[2],
                 "next_node": option[3],
                 "feedback_type": option[4],
-                "event": event
+                "events": events_data
             })
 
         return {
