@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify
 from database.hok_db import Hok_DB
 from managers.dialogue_manager import Dialogue_Manager
 from managers.vendor_manager import Vendor_Manager
+from managers.challenge_manager import Challenge_Manager
 import base64
 import sys
 
@@ -10,6 +11,7 @@ class App:
         self.mode = mode
         self.dialogue_manager = None
         self.vendor_manager = None
+        self.challenge_manager = None
         self.app = None
 
     def run(self):
@@ -19,6 +21,7 @@ class App:
     def create_app(self):
         self.dialogue_manager = Dialogue_Manager(self.mode)
         self.vendor_manager = Vendor_Manager(self.mode)
+        self.challenge_manager = Challenge_Manager(self.mode)
         self.app = Flask(import_name="Hokkien Game")
 
     def create_endpoints(self):
@@ -327,6 +330,122 @@ class App:
             }), 200
 
         self.app.run(host="0.0.0.0", port=8000, debug=False)
+
+        #minigame api endpoints
+        @self.app.route("/api/v1/challenges", methods=["GET"])
+        def get_challenges():
+            """Returns lightweight list of all available challenges."""
+            challenges = self.challenge_manager.get_all_challenges()
+            return jsonify({
+                "status": "success",
+                "data": challenges,
+                "meta": {"processTimeMS": 123}
+            }), 200
+        
+        @self.app.route("/api/v1/challenges/<challenge_id>", methods=["GET"])
+        def get_challenge(challenge_id):
+            """Returns full details and requirements for a specific challenge."""
+            challenge = self.challenge_manager.get_challenge(challenge_id)
+            if not challenge:
+                return jsonify({
+                    "status": "error",
+                    "message": "Challenge not found: %s" % challenge_id
+                }), 404
+            return jsonify({
+                "status": "success",
+                "data": challenge,
+                "meta": {"processTimeMS": 123}
+            }), 200
+        
+        @self.app.route("/api/v1/challenges/accept", methods=["POST"])
+        def accept_challenge():
+            """Accepts a challenge for a user. Only one active challenge at a time."""
+            body = request.get_json()
+            user_id = body.get("user_id")
+            challenge_id = body.get("challenge_id")
+ 
+            if not user_id or not challenge_id:
+                return jsonify({
+                    "status": "error",
+                    "message": "user_id and challenge_id are required"
+                }), 400
+            
+            result, error = self.challenge_manager.accept_challenge(user_id, challenge_id)
+            if error:
+                return jsonify({
+                    "status": "error",
+                    "message": error
+                }), 400
+ 
+            return jsonify({
+                "status": "success",
+                "data": result,
+                "meta": {"processTimeMS": 123}
+            }), 200
+        
+        @self.app.route("/api/v1/challenges/inventory", methods=["POST"])
+        def add_to_inventory():
+            """Adds an item to the user's inventory. Triggered by ADD_TO_INVENTORY event."""
+            body = request.get_json()
+            user_id = body.get("user_id")
+            item_id = body.get("item_id")
+            challenge_id = body.get("challenge_id")
+ 
+            if not user_id or not item_id or not challenge_id:
+                return jsonify({
+                    "status": "error",
+                    "message": "user_id, item_id and challenge_id are required"
+                }), 400
+ 
+            result, error = self.challenge_manager.add_to_inventory(user_id, item_id, challenge_id)
+            if error:
+                return jsonify({
+                    "status": "error",
+                    "message": error
+                }), 400
+ 
+            return jsonify({
+                "status": "success",
+                "data": result,
+                "meta": {"processTimeMS": 123}
+            }), 200
+        
+        @self.app.route("/api/v1/user/<user_id>/inventory", methods=["GET"])
+        def get_user_inventory(user_id):
+            """Returns user's full inventory and active challenge. Called on login to restore session."""
+            inventory = self.challenge_manager.get_user_inventory(user_id)
+            return jsonify({
+                "status": "success",
+                "data": inventory,
+                "meta": {"processTimeMS": 123}
+            }), 200
+ 
+        @self.app.route("/api/v1/challenges/verify", methods=["POST"])
+        def verify_challenge():
+            """Verifies challenge completion. Run when ADD_TO_INVENTORY event fires."""
+            body = request.get_json()
+            user_id = body.get("user_id")
+            challenge_id = body.get("challenge_id")
+            final_order = body.get("final_order")
+ 
+            if not user_id or not challenge_id or final_order is None:
+                return jsonify({
+                    "status": "error",
+                    "message": "user_id, challenge_id and final_order are required"
+                }), 400
+ 
+            is_success, reason = self.challenge_manager.verify_challenge(
+                user_id, challenge_id, final_order)
+ 
+            return jsonify({
+                "status": "success",
+                "data": {
+                    "is_success": is_success,
+                    "challenge_id": challenge_id,
+                    "reason": reason
+                },
+                "meta": {"processTimeMS": 123}
+            }), 200
 
 def select_launch_mode():
     prompt = '''
