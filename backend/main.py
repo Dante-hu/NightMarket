@@ -1,4 +1,5 @@
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 from database.hok_db import Hok_DB
 from managers.dialogue_manager import Dialogue_Manager
 from managers.vendor_manager import Vendor_Manager
@@ -23,6 +24,8 @@ class App:
         self.vendor_manager = Vendor_Manager(self.mode)
         self.challenge_manager = Challenge_Manager(self.mode)
         self.app = Flask(import_name="Hokkien Game")
+        CORS(self.app, resources={r"/api/*": {"origins": "*"}})
+
 
     def create_endpoints(self):
         print("\nStarting Flask app...")
