@@ -329,8 +329,6 @@ class App:
                 "meta": {"processTimeMS": 123}
             }), 200
 
-        self.app.run(host="0.0.0.0", port=8000, debug=False)
-
         #minigame api endpoints
         @self.app.route("/api/v1/challenges", methods=["GET"])
         def get_challenges():
@@ -446,6 +444,8 @@ class App:
                 },
                 "meta": {"processTimeMS": 123}
             }), 200
+
+        self.app.run(host="0.0.0.0", port=8000, debug=False)
 
 def select_launch_mode():
     prompt = '''
