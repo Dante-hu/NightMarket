@@ -122,17 +122,18 @@ class Challenge_Manager(Hok_DB):
         """Adds an item to the user's inventory for a given challenge."""
         now = datetime.now(timezone.utc).isoformat()
 
-        # Check for duplicate — don't add the same item twice for same challenge
-        command = "SELECT * FROM inventory WHERE user_id='%s' AND item_id='%s' AND challenge_id='%s'" % (
-            user_id, item_id, challenge_id)
-        existing = self.db.get_data(command)
-        if existing:
-            return None, "Item already in inventory for this challenge"
+        # Check for duplicate only if challenge_id is provided
+        if challenge_id:
+            command = "SELECT * FROM inventory WHERE user_id='%s' AND item_id='%s' AND challenge_id='%s'" % (
+                user_id, item_id, challenge_id)
+            existing = self.db.get_data(command)
+            if existing:
+                return None, "Item already in inventory for this challenge"
 
         self.db.insert("inventory", [{
             "user_id": user_id,
             "item_id": item_id,
-            "challenge_id": challenge_id,
+            "challenge_id": challenge_id if challenge_id else None,
             "acquired_at": now
         }])
 
