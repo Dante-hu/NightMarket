@@ -391,10 +391,10 @@ class App:
             item_id = body.get("item_id")
             challenge_id = body.get("challenge_id")
  
-            if not user_id or not item_id or not challenge_id:
+            if not user_id or not item_id:
                 return jsonify({
                     "status": "error",
-                    "message": "user_id, item_id and challenge_id are required"
+                    "message": "user_id and item_id are required"
                 }), 400
  
             result, error = self.challenge_manager.add_to_inventory(user_id, item_id, challenge_id)
