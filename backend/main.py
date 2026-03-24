@@ -41,6 +41,57 @@ class App:
             }
         }
 
+        MOCK_USER_INVENTORY = {
+            "u123": {
+                "user_id": "u123",
+                "active_challenge_id": "c001",
+                "inventory": [
+                    {
+                        "item_id": "item_apple",
+                        "challenge_id": "c001",
+                        "acquired_at": "2026-03-19T20:00:00Z"
+                    },
+                    {
+                        "item_id": "item_peanut",
+                        "challenge_id": "c001",
+                        "acquired_at": "2026-03-19T20:05:00Z"
+                    }
+                ]
+            },
+            "u_4eaab2a1": {
+                "user_id": "u_4eaab2a1",
+                "active_challenge_id": "c_mock_01",
+                "inventory": [
+                    {
+                        "item_id": "item_noodle",
+                        "challenge_id": "c_mock_01",
+                        "acquired_at": "2026-03-19T20:10:00Z"
+                    },
+                    {
+                        "item_id": "item_soup",
+                        "challenge_id": "c_mock_01",
+                        "acquired_at": "2026-03-19T20:11:00Z"
+                    }
+                ]
+            }
+        }
+
+        DEFAULT_MOCK_INVENTORY = {
+            "active_challenge_id": "c_mock_01",
+            "inventory": [
+                {
+                    "item_id": "item_noodle",
+                    "challenge_id": "c_mock_01",
+                    "acquired_at": "2026-03-19T20:10:00Z"
+                },
+                {
+                    "item_id": "item_soup",
+                    "challenge_id": "c_mock_01",
+                    "acquired_at": "2026-03-19T20:11:00Z"
+                }
+            ]
+        }
+
         @self.app.route("/api/v1/user/<user_id>/stats", methods=["GET"])
         def api_get_user_stats(user_id):
             user = MOCK_USER_STATS.get(user_id)
@@ -412,6 +463,19 @@ class App:
         def get_user_inventory(user_id):
             """Returns user's full inventory and active challenge. Called on login to restore session."""
             inventory = self.challenge_manager.get_user_inventory(user_id)
+
+            # Temporary mock fallback: return hard-coded inventory when no DB data exists.
+            no_db_data = (
+                inventory.get("active_challenge_id") is None and
+                len(inventory.get("inventory", [])) == 0
+            )
+            if no_db_data:
+                inventory = MOCK_USER_INVENTORY.get(user_id, {
+                    "user_id": user_id,
+                    "active_challenge_id": DEFAULT_MOCK_INVENTORY["active_challenge_id"],
+                    "inventory": DEFAULT_MOCK_INVENTORY["inventory"]
+                })
+
             return jsonify({
                 "status": "success",
                 "data": inventory,
