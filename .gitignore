@@ -17,8 +17,11 @@ __pycache__/
 .idea/
 
 # Database files
-*.db
+#*.db
 
 # OS
 .DS_Store
 Thumbs.db
+
+# lesson plans insert scripts
+#populate_lesson_*.py

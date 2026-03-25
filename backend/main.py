@@ -453,6 +453,7 @@ Select launch mode...
         
 > Press 0 | Launch in default mode
 > Press 1 | Launch in test mode
+> Press 2 | Launch in lesson mode
 '''      
     mode = input(prompt)
     match mode:
@@ -460,6 +461,8 @@ Select launch mode...
             return 0
         case "1":
             return 1
+        case "2":
+            return 2
         case _:
             raise Exception("Error, mode selected is invalid.") 
 

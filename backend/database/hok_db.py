@@ -24,6 +24,8 @@ class Hok_DB:
                 return "hok_data"
             case 1:
                 return "hok_test_data"
+            case 2:
+                return "hok_lesson_data"
             case _:
                 raise Exception("Error, mode selected is invalid.") 
 

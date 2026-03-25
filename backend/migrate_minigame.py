@@ -12,7 +12,7 @@ import sqlite3
 import json
 import os
 
-# ── Config ────────────────────────────────────────────────────────────────────
+# Config
 DB_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "database", "hok_test_data.db")
 
 def migrate():
@@ -25,7 +25,7 @@ def migrate():
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
 
-    # ── Step 1: Create new tables ─────────────────────────────────────────────
+    #Create new tables
     print("\nCreating minigame tables...")
 
     cursor.execute("""
@@ -35,7 +35,7 @@ def migrate():
             type TEXT
         )
     """)
-    print("  ✅ challenges")
+    print(" challenges")
 
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS challenge_requirements (
@@ -46,7 +46,7 @@ def migrate():
             required_items TEXT
         )
     """)
-    print("  ✅ challenge_requirements")
+    print(" challenge_requirements")
 
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS user_challenges (
@@ -57,7 +57,7 @@ def migrate():
             completed_at TEXT
         )
     """)
-    print("  ✅ user_challenges")
+    print("  user_challenges")
 
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS inventory (
@@ -67,9 +67,9 @@ def migrate():
             acquired_at TEXT
         )
     """)
-    print("  ✅ inventory")
+    print(" inventory")
 
-    # ── Step 2: Seed challenge data ───────────────────────────────────────────
+    # Seed challenge data
     print("\nSeeding challenge data...")
 
     challenges = [
@@ -81,9 +81,9 @@ def migrate():
     ]
     cursor.executemany(
         "INSERT OR IGNORE INTO challenges VALUES (?,?,?)", challenges)
-    print(f"  ✅ Inserted {cursor.rowcount} challenges (skipped duplicates)")
+    print(f" Inserted {cursor.rowcount} challenges (skipped duplicates)")
 
-    # ── Step 3: Seed challenge requirements ──────────────────────────────────
+    # Seed challenge requirements
     # Uses existing item IDs and vendor IDs from your db:
     #   i_001 = Taro bubble tea     ($5.99, vendor v_001)
     #   i_002 = Milk bubble tea     ($5.99, vendor v_001)
@@ -107,11 +107,11 @@ def migrate():
     ]
     cursor.executemany(
         "INSERT OR IGNORE INTO challenge_requirements VALUES (?,?,?,?,?)", requirements)
-    print(f"  ✅ Inserted challenge requirements")
+    print(f" Inserted challenge requirements")
 
     conn.commit()
 
-    # ── Step 4: Verify everything looks correct ───────────────────────────────
+    # Verify everything looks correct 
     print("\nVerifying migration...")
 
     print("\n  challenges table:")
@@ -135,7 +135,7 @@ def migrate():
         print(f"    {row[0]}")
 
     conn.close()
-    print("\n✅ Migration complete! Your existing data was not modified.")
+    print("\n Migration complete! Your existing data was not modified.")
 
 if __name__ == "__main__":
     migrate()

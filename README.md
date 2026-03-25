@@ -69,6 +69,17 @@ The server will start on `http://localhost:8000`.
 
 ---
 
+## Database Setup
+
+Run these scripts in **ORDER** to set up the database:
+
+- python populate_lesson_0.py
+- python populate_lesson_1.py
+- python populate_lesson_2.py
+- python populate_lesson_3.py
+- python populate_lesson_4.py
+- python migrate_minigame.py
+
 ## Running the Tests
 
 Make sure your virtual environment is activated and dependencies are installed before running tests.
