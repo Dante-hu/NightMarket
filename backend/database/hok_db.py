@@ -40,6 +40,19 @@ class Hok_DB:
 
         self.db.create_table("vendors", "vendor_id TEXT, node_id TEXT, npc_id TEXT, vendor_name TEXT")
         self.db.create_table("items", "vendor_id TEXT, item_id TEXT, item_name TEXT, item_description TEXT, item_value INTEGER")
+        
+        #minigame api
+        self.db.create_table("challenges", 
+            "challenge_id TEXT, title TEXT, type TEXT, difficulty TEXT")
+        
+        self.db.create_table("challenge_requirements",
+            "challenge_id TEXT, target_item_id TEXT, exact_price INTEGER, required_toppings TEXT")
+        
+        self.db.create_table("user_challenges",
+            "user_id TEXT, challenge_id TEXT, status TEXT, accepted_at TEXT, completed_at TEXT")
+        
+        self.db.create_table("inventory",
+            "user_id TEXT, item_id TEXT, challenge_id TEXT, acquired_at TEXT")
 
     def insert(self, table_name, data):
         self.db.insert(table_name, data)
