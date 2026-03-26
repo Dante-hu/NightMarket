@@ -620,14 +620,14 @@ def populate_events(cursor):
 
 
 def verify(cursor):
-    print("\n── Verification ─────────────────────────────────────────────")
+    print("\n── Verification ")
     tables = ["npcs", "vendors", "items", "dialogue_nodes",
               "dialogues", "words", "options", "events"]
     for table in tables:
         count = cursor.execute(f"SELECT COUNT(*) FROM {table}").fetchone()[0]
         print(f"  {table:20s} → {count} total rows")
 
-    print("\n── Lesson 4 Vendors ─────────────────────────────────────────")
+    print("\n── Lesson 4 Vendors ")
     rows = cursor.execute("""
         SELECT v.vendor_id, v.vendor_name, n.npc_name
         FROM vendors v JOIN npcs n ON n.npc_id = v.npc_id
@@ -637,7 +637,7 @@ def verify(cursor):
     for row in rows:
         print(f"  {row[0]:20s} | {row[1]:20s} | {row[2]}")
 
-    print("\n── Sample: Bubble Tea Sugar Options ─────────────────────────")
+    print("\n── Sample: Bubble Tea Sugar Options ")
     opts = cursor.execute("""
         SELECT option_TEXT, next_node_id FROM options
         WHERE node_id = 'n_l4_v1_size_ask'
