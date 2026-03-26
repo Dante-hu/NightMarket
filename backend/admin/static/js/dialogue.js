@@ -23,9 +23,16 @@ async function loadDialogueTree() {
 
 function renderDialogueTree() {
     const container = document.getElementById('dialogue-tree');
-    if (!dialogueNodes.length) { container.innerHTML = '<div class="empty">No dialogue nodes</div>'; return; }
+    if (!dialogueNodes.length) {
+        container.innerHTML = `
+            <div class="empty">No dialogue nodes</div>
+            <button onclick="addRootNode()" class="btn btn-primary" style="margin-top: 8px;">+ Add Root Node</button>
+        `;
+        return;
+    }
     const rootNodes = dialogueNodes.filter(n => n.parent_node_id === 'n_000');
-    container.innerHTML = rootNodes.map(node => renderNode(node, 0)).join('');
+    container.innerHTML = rootNodes.map(node => renderNode(node, 0)).join('') + 
+        '<button onclick="addRootNode()" class="btn" style="margin-top: 8px;">+ Add Root Node</button>';
 }
 
 function renderNode(node, depth) {
@@ -135,6 +142,26 @@ async function deleteNode(nodeId) {
     try {
         await API.dialogue.deleteNode(nodeId);
         loadDialogueTree();
+    } catch (e) { console.error(e.message); }
+}
+
+async function addRootNode() {
+    const existingIds = dialogueNodes.map(n => n.node_id);
+    let nodeId = 'n_' + Date.now();
+    let counter = 1;
+    while (existingIds.includes(nodeId)) {
+        nodeId = 'n_' + Date.now() + '_' + counter++;
+    }
+    try {
+        await API.dialogue.createNode({ node_id: nodeId, parent_node_id: 'n_000', npc_id: selectedNpcId });
+        loadDialogueTree();
+        setTimeout(() => {
+            const card = document.getElementById('node-card-' + nodeId);
+            if (card) {
+                card.classList.add('expanded');
+                document.getElementById('node-' + nodeId).style.display = 'block';
+            }
+        }, 100);
     } catch (e) { console.error(e.message); }
 }
 
