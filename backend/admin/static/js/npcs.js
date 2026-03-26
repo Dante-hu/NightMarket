@@ -1,6 +1,18 @@
 let npcs = [];
 let allDialogueNodes = [];
 
+function copyId(text, event) {
+    navigator.clipboard.writeText(text);
+    const el = event.target;
+    const original = el.textContent;
+    el.textContent = 'Copied!';
+    el.style.color = 'var(--green)';
+    setTimeout(() => {
+        el.textContent = original;
+        el.style.color = '';
+    }, 1000);
+}
+
 async function loadNpcs() {
     try {
         const [npcsRes, dialogueRes] = await Promise.all([
@@ -21,7 +33,7 @@ function renderNpcTable() {
     }
     tbody.innerHTML = npcs.map(npc => `
         <tr>
-            <td><span class="mono id">${npc.npc_id}</span></td>
+            <td><span class="mono id" onclick="copyId('${npc.npc_id}', event)" title="Click to copy" style="cursor:pointer;">${npc.npc_id}</span></td>
             <td><input type="text" value="${npc.npc_name}" onchange="updateNpc('${npc.npc_id}', this.value)" class="input" style="max-width: 200px;"></td>
             <td><button onclick="deleteNpc('${npc.npc_id}')" class="link danger">Delete</button></td>
         </tr>

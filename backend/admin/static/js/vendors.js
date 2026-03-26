@@ -1,5 +1,17 @@
 let vendors = [];
 
+function copyId(text, event) {
+    navigator.clipboard.writeText(text);
+    const el = event.target;
+    const original = el.textContent;
+    el.textContent = 'Copied!';
+    el.style.color = 'var(--green)';
+    setTimeout(() => {
+        el.textContent = original;
+        el.style.color = '';
+    }, 1000);
+}
+
 async function loadVendors() {
     try {
         const res = await API.vendors.getAll();
@@ -17,7 +29,7 @@ function renderVendors() {
                 <div class="vendor-info">
                     <h3>${v.vendor_name}</h3>
                     <div class="meta">
-                        <span class="mono id">${v.vendor_id}</span>
+                        <span class="mono id" onclick="copyId('${v.vendor_id}', event)" title="Click to copy" style="cursor:pointer;">${v.vendor_id}</span>
                         <span>NPC: ${v.npc_id}</span>
                         <span class="badge">${v.item_count} items</span>
                     </div>
@@ -90,7 +102,7 @@ async function loadVendorItems(vendorId) {
         const tbody = document.getElementById('items-table-' + vendorId);
         tbody.innerHTML = res.data.map(i => `
             <tr>
-                <td><span class="mono" style="color: var(--accent);">${i.item_id}</span></td>
+                <td><span class="mono" style="color: var(--accent); cursor:pointer;" onclick="copyId('${i.item_id}', event)" title="Click to copy">${i.item_id}</span></td>
                 <td><input type="text" value="${i.item_name}" onchange="updateItem('${i.item_id}', this.value, '${i.item_description}', ${i.item_value})" class="input" style="width: 100px;"></td>
                 <td><input type="text" value="${i.item_description}" onchange="updateItem('${i.item_id}', '${i.item_name}', this.value, ${i.item_value})" class="input"></td>
                 <td><input type="number" value="${i.item_value}" onchange="updateItem('${i.item_id}', '${i.item_name}', '${i.item_description}', parseFloat(this.value))" class="input" style="width: 60px;"></td>
