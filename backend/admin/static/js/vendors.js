@@ -68,7 +68,7 @@ async function createVendor() {
 async function deleteVendor(id) {
     if (!confirm('Delete vendor?')) return;
     try { await API.vendors.delete(id); loadVendors(); }
-    catch (e) { console.error(e.message); }
+    catch (e) { alert(e.message); }
 }
 
 function toggleVendor(vendorId) {

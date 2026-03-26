@@ -1,9 +1,14 @@
 let npcs = [];
+let allDialogueNodes = [];
 
 async function loadNpcs() {
     try {
-        const res = await API.npcs.getAll();
-        npcs = res.data;
+        const [npcsRes, dialogueRes] = await Promise.all([
+            API.npcs.getAll(),
+            Promise.all((await API.npcs.getAll()).data.map(n => API.dialogue.getNodes(n.npc_id)))
+        ]);
+        npcs = npcsRes.data;
+        allDialogueNodes = dialogueRes.flatMap(d => d.data);
         renderNpcTable();
     } catch (e) { console.error(e.message); }
 }
@@ -47,7 +52,12 @@ async function updateNpc(id, name) {
 }
 
 async function deleteNpc(id) {
+    const hasNodes = allDialogueNodes.some(n => n.npc_id === id);
+    if (hasNodes) {
+        alert('Cannot delete NPC with existing dialogue nodes. Delete dialogue nodes first.');
+        return;
+    }
     if (!confirm('Delete this NPC?')) return;
     try { await API.npcs.delete(id); loadNpcs(); }
-    catch (e) { console.error(e.message); }
+    catch (e) { alert(e.message); }
 }

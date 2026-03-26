@@ -1,5 +1,6 @@
 let dialogueNodes = [];
 let selectedNpcId = '';
+let expandedNodes = new Set();
 
 async function loadNpcSelect() {
     try {
@@ -33,6 +34,24 @@ function renderDialogueTree() {
     const rootNodes = dialogueNodes.filter(n => n.parent_node_id === 'n_000');
     container.innerHTML = rootNodes.map(node => renderNode(node, 0)).join('') + 
         '<button onclick="addRootNode()" class="btn" style="margin-top: 8px;">+ Add Root Node</button>';
+    
+    // Restore expanded states
+    setTimeout(() => restoreExpandedStates(), 0);
+}
+
+function restoreExpandedStates() {
+    expandedNodes.forEach(nodeId => {
+        const card = document.getElementById('node-card-' + nodeId);
+        const content = document.getElementById('node-' + nodeId);
+        const children = document.getElementById('children-' + nodeId);
+        if (card && content) {
+            card.classList.add('expanded');
+            content.style.display = 'block';
+            if (children) children.style.display = 'block';
+            // Load options for expanded nodes
+            loadOptions(nodeId);
+        }
+    });
 }
 
 function renderNode(node, depth) {
@@ -86,10 +105,12 @@ function toggleNode(nodeId) {
     if (isExpanded) {
         card.classList.remove('expanded');
         content.style.display = 'none';
+        expandedNodes.delete(nodeId);
     } else {
         card.classList.add('expanded');
         content.style.display = 'block';
         loadOptions(nodeId);
+        expandedNodes.add(nodeId);
     }
 }
 
@@ -99,9 +120,9 @@ async function loadOptions(nodeId) {
         const container = document.getElementById('options-' + nodeId);
         container.innerHTML = res.data.map(o => `
             <div style="display: flex; gap: 6px; margin-bottom: 4px; align-items: center;">
-                <input type="text" value="${o.option_text}" onchange="updateOption('${o.option_id}', this.value, '${o.next_node_id}')" class="input" style="flex: 1;" placeholder="Option text...">
+                <input type="text" id="opt-text-${o.option_id}" value="${(o.option_text || '').replace(/"/g, '&quot;')}" onchange="updateOption('${o.option_id}', this.value, document.getElementById('opt-next-${o.option_id}').value)" class="input" style="flex: 1;" placeholder="Option text...">
                 <span style="color: var(--subtext); font-size: 10px;">→</span>
-                <input type="text" value="${o.next_node_id}" onchange="updateOption('${o.option_id}', '${o.option_text}', this.value)" class="input" style="width: 80px;" placeholder="next node">
+                <input type="text" id="opt-next-${o.option_id}" value="${o.next_node_id || ''}" onchange="updateOption('${o.option_id}', document.getElementById('opt-text-${o.option_id}').value, this.value)" class="input" style="width: 80px;" placeholder="next node">
                 <button onclick="deleteOption('${o.option_id}', '${nodeId}')" class="link danger">×</button>
             </div>
         `).join('') || '<div class="empty" style="padding: 8px;">No options</div>';
@@ -111,10 +132,9 @@ async function loadOptions(nodeId) {
 async function saveDialogue(nodeId) {
     const dialogue = document.getElementById('dialogue-' + nodeId).value;
     const translation = document.getElementById('translation-' + nodeId).value;
-    try {
-        await API.dialogue.updateDialogue(nodeId, { dialogue, translation });
-        loadDialogueTree();
-    } catch (e) { console.error(e.message); }
+    expandedNodes.add(nodeId);
+    await API.dialogue.updateDialogue(nodeId, { dialogue, translation });
+    loadDialogueTree();
 }
 
 async function addChildNode(parentId) {
@@ -124,25 +144,27 @@ async function addChildNode(parentId) {
     while (existingIds.includes(nodeId)) {
         nodeId = 'n_' + Date.now() + '_' + counter++;
     }
-    try {
-        await API.dialogue.createNode({ node_id: nodeId, parent_node_id: parentId, npc_id: selectedNpcId });
-        loadDialogueTree();
-        setTimeout(() => {
-            const card = document.getElementById('node-card-' + nodeId);
-            if (card) {
-                card.classList.add('expanded');
-                document.getElementById('node-' + nodeId).style.display = 'block';
-            }
-        }, 100);
-    } catch (e) { console.error(e.message); }
+    await API.dialogue.createNode({ node_id: nodeId, parent_node_id: parentId, npc_id: selectedNpcId });
+    expandedNodes.add(parentId);
+    loadDialogueTree();
 }
 
 async function deleteNode(nodeId) {
+    // Check if node has children
+    const children = dialogueNodes.filter(n => n.parent_node_id === nodeId);
+    if (children.length > 0) {
+        alert('Cannot delete node with child nodes. Delete child nodes first.');
+        return;
+    }
     if (!confirm('Delete node?')) return;
     try {
         await API.dialogue.deleteNode(nodeId);
-        loadDialogueTree();
-    } catch (e) { console.error(e.message); }
+    } catch (e) {
+        alert(e.message);
+        return;
+    }
+    expandedNodes.delete(nodeId);
+    loadDialogueTree();
 }
 
 async function addRootNode() {
@@ -152,37 +174,25 @@ async function addRootNode() {
     while (existingIds.includes(nodeId)) {
         nodeId = 'n_' + Date.now() + '_' + counter++;
     }
-    try {
-        await API.dialogue.createNode({ node_id: nodeId, parent_node_id: 'n_000', npc_id: selectedNpcId });
-        loadDialogueTree();
-        setTimeout(() => {
-            const card = document.getElementById('node-card-' + nodeId);
-            if (card) {
-                card.classList.add('expanded');
-                document.getElementById('node-' + nodeId).style.display = 'block';
-            }
-        }, 100);
-    } catch (e) { console.error(e.message); }
+    await API.dialogue.createNode({ node_id: nodeId, parent_node_id: 'n_000', npc_id: selectedNpcId });
+    expandedNodes.add(nodeId);
+    loadDialogueTree();
 }
 
 async function addOption(nodeId) {
     const optionId = 'o_' + Date.now();
-    const nextNodeId = '';
-    try {
-        await API.dialogue.createOption(nodeId, { option_id: optionId, option_text: '', next_node_id: nextNodeId, feedback_type: 'neutral' });
-        loadOptions(nodeId);
-    } catch (e) { console.error(e.message); }
+    await API.dialogue.createOption(nodeId, { option_id: optionId, option_text: '', next_node_id: '', feedback_type: 'neutral' });
+    expandedNodes.add(nodeId);
+    loadDialogueTree();
 }
 
 async function updateOption(optionId, optionText, nextNodeId) {
-    try { await API.dialogue.updateOption(optionId, { option_text: optionText, next_node_id: nextNodeId, feedback_type: 'neutral' }); }
-    catch (e) { console.error(e.message); }
+    await API.dialogue.updateOption(optionId, { option_text: optionText, next_node_id: nextNodeId, feedback_type: 'neutral' });
 }
 
 async function deleteOption(optionId, nodeId) {
     if (!confirm('Delete option?')) return;
-    try {
-        await API.dialogue.deleteOption(optionId);
-        loadOptions(nodeId);
-    } catch (e) { console.error(e.message); }
+    await API.dialogue.deleteOption(optionId);
+    expandedNodes.add(nodeId);
+    loadDialogueTree();
 }
