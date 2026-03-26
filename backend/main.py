@@ -1,13 +1,13 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory
 from database.hok_db import Hok_DB
 from managers.dialogue_manager import Dialogue_Manager
 from managers.vendor_manager import Vendor_Manager
 from managers.challenge_manager import Challenge_Manager
 import base64
-import sys
+import os
 
 class App:
-    def __init__(self, mode=1):
+    def __init__(self, mode=2):
         self.mode = mode
         self.dialogue_manager = None
         self.vendor_manager = None
@@ -489,16 +489,16 @@ class App:
             user_id = body.get("user_id")
             challenge_id = body.get("challenge_id")
             final_order = body.get("final_order")
- 
+  
             if not user_id or not challenge_id or final_order is None:
                 return jsonify({
                     "status": "error",
                     "message": "user_id, challenge_id and final_order are required"
                 }), 400
- 
+  
             is_success, reason = self.challenge_manager.verify_challenge(
                 user_id, challenge_id, final_order)
- 
+  
             return jsonify({
                 "status": "success",
                 "data": {
@@ -508,6 +508,230 @@ class App:
                 },
                 "meta": {"processTimeMS": 123}
             }), 200
+
+        admin_dir = os.path.join(os.path.dirname(__file__), "admin", "static")
+
+        @self.app.route("/admin")
+        def admin_index():
+            return send_from_directory(admin_dir, "index.html")
+
+        @self.app.route("/admin/<path:filename>")
+        def admin_static(filename):
+            return send_from_directory(admin_dir, filename)
+
+        @self.app.route("/api/admin/npcs", methods=["GET"])
+        def admin_get_npcs():
+            npcs = self.dialogue_manager.get_all_npcs()
+            return jsonify({
+                "status": "success",
+                "data": [{"npc_id": n[0], "npc_name": n[1]} for n in npcs]
+            }), 200
+
+        @self.app.route("/api/admin/npcs", methods=["POST"])
+        def admin_create_npc():
+            body = request.get_json()
+            npc_id = body.get("npc_id")
+            npc_name = body.get("npc_name")
+            if not npc_id or not npc_name:
+                return jsonify({"status": "error", "message": "npc_id and npc_name required"}), 400
+            result = self.dialogue_manager.create_npc(npc_id, npc_name)
+            return jsonify({"status": "success", "data": result}), 201
+
+        @self.app.route("/api/admin/npcs/<npc_id>", methods=["PUT"])
+        def admin_update_npc(npc_id):
+            body = request.get_json()
+            npc_name = body.get("npc_name")
+            if not npc_name:
+                return jsonify({"status": "error", "message": "npc_name required"}), 400
+            result = self.dialogue_manager.update_npc(npc_id, npc_name)
+            return jsonify({"status": "success", "data": result}), 200
+
+        @self.app.route("/api/admin/npcs/<npc_id>", methods=["DELETE"])
+        def admin_delete_npc(npc_id):
+            result, success = self.dialogue_manager.delete_npc(npc_id)
+            if not success:
+                return jsonify({"status": "error", "message": result.get("error")}), 400
+            return jsonify({"status": "success", "data": result}), 200
+
+        @self.app.route("/api/admin/dialogue-nodes", methods=["GET"])
+        def admin_get_nodes():
+            npc_id = request.args.get("npc_id")
+            if not npc_id:
+                return jsonify({"status": "error", "message": "npc_id required"}), 400
+            nodes = self.dialogue_manager.get_nodes_for_npc(npc_id)
+            dialogues = {}
+            for node in nodes:
+                d = self.dialogue_manager.get_dialogue(node[0])
+                if d:
+                    dialogues[node[0]] = {"dialogue_id": d[0][1], "dialogue": d[0][2], "translation": d[0][3]}
+            return jsonify({
+                "status": "success",
+                "data": [{"node_id": n[0], "parent_node_id": n[1], "npc_id": n[2], "dialogue": dialogues.get(n[0])} for n in nodes]
+            }), 200
+
+        @self.app.route("/api/admin/dialogue-nodes", methods=["POST"])
+        def admin_create_node():
+            body = request.get_json()
+            node_id = body.get("node_id")
+            parent_node_id = body.get("parent_node_id")
+            npc_id = body.get("npc_id")
+            if not node_id or not parent_node_id or not npc_id:
+                return jsonify({"status": "error", "message": "node_id, parent_node_id, npc_id required"}), 400
+            result = self.dialogue_manager.create_node(node_id, parent_node_id, npc_id)
+            dialogue_id = f"d_{node_id}"
+            self.dialogue_manager.create_dialogue(node_id, dialogue_id, "", "", npc_id)
+            return jsonify({"status": "success", "data": result}), 201
+
+        @self.app.route("/api/admin/dialogue-nodes/<node_id>", methods=["PUT"])
+        def admin_update_node(node_id):
+            body = request.get_json()
+            parent_node_id = body.get("parent_node_id")
+            if not parent_node_id:
+                return jsonify({"status": "error", "message": "parent_node_id required"}), 400
+            result = self.dialogue_manager.update_node(node_id, parent_node_id)
+            return jsonify({"status": "success", "data": result}), 200
+
+        @self.app.route("/api/admin/dialogue-nodes/<node_id>", methods=["DELETE"])
+        def admin_delete_node(node_id):
+            result, success = self.dialogue_manager.delete_node(node_id)
+            if not success:
+                return jsonify({"status": "error", "message": result.get("error")}), 400
+            return jsonify({"status": "success", "data": result}), 200
+
+        @self.app.route("/api/admin/dialogues/<node_id>", methods=["GET"])
+        def admin_get_dialogue(node_id):
+            d = self.dialogue_manager.get_dialogue(node_id)
+            if not d:
+                return jsonify({"status": "error", "message": "Dialogue not found"}), 404
+            return jsonify({
+                "status": "success",
+                "data": {"node_id": d[0][0], "dialogue_id": d[0][1], "dialogue": d[0][2], "translation": d[0][3], "npc_id": d[0][5]}
+            }), 200
+
+        @self.app.route("/api/admin/dialogues/<node_id>", methods=["PUT"])
+        def admin_update_dialogue(node_id):
+            body = request.get_json()
+            dialogue_text = body.get("dialogue")
+            translation = body.get("translation")
+            if dialogue_text is None:
+                return jsonify({"status": "error", "message": "dialogue required"}), 400
+            result = self.dialogue_manager.update_dialogue(node_id, dialogue_text, translation or "")
+            return jsonify({"status": "success", "data": result}), 200
+
+        @self.app.route("/api/admin/options/<node_id>", methods=["GET"])
+        def admin_get_options(node_id):
+            options = self.dialogue_manager.get_options_for_node(node_id)
+            return jsonify({
+                "status": "success",
+                "data": [{"option_id": o[1], "option_text": o[2], "next_node_id": o[3], "feedback_type": o[4]} for o in options]
+            }), 200
+
+        @self.app.route("/api/admin/options/<node_id>", methods=["POST"])
+        def admin_create_option(node_id):
+            body = request.get_json()
+            option_id = body.get("option_id")
+            option_text = body.get("option_text", "")
+            next_node_id = body.get("next_node_id", "")
+            feedback_type = body.get("feedback_type", "neutral")
+            if not option_id:
+                return jsonify({"status": "error", "message": "option_id required"}), 400
+            result = self.dialogue_manager.create_option(node_id, option_id, option_text, next_node_id, feedback_type)
+            return jsonify({"status": "success", "data": result}), 201
+
+        @self.app.route("/api/admin/options/<option_id>", methods=["PUT"])
+        def admin_update_option(option_id):
+            body = request.get_json()
+            option_text = body.get("option_text", "")
+            next_node_id = body.get("next_node_id", "")
+            feedback_type = body.get("feedback_type")
+            if not option_text and not next_node_id:
+                return jsonify({"status": "error", "message": "option_text or next_node_id required"}), 400
+            result = self.dialogue_manager.update_option(option_id, option_text, next_node_id, feedback_type or "neutral")
+            return jsonify({"status": "success", "data": result}), 200
+
+        @self.app.route("/api/admin/options/<option_id>", methods=["DELETE"])
+        def admin_delete_option(option_id):
+            result, success = self.dialogue_manager.delete_option(option_id)
+            return jsonify({"status": "success", "data": result}), 200
+
+        @self.app.route("/api/admin/vendors", methods=["GET"])
+        def admin_get_vendors():
+            vendors = self.vendor_manager.get_all_vendors()
+            result = []
+            for v in vendors:
+                items = self.vendor_manager.get_items(v[0])
+                result.append({
+                    "vendor_id": v[0],
+                    "node_id": v[1],
+                    "npc_id": v[2],
+                    "vendor_name": v[3],
+                    "item_count": len(items)
+                })
+            return jsonify({"status": "success", "data": result}), 200
+
+        @self.app.route("/api/admin/vendors", methods=["POST"])
+        def admin_create_vendor():
+            body = request.get_json()
+            vendor_id = body.get("vendor_id")
+            node_id = body.get("node_id")
+            npc_id = body.get("npc_id")
+            vendor_name = body.get("vendor_name")
+            if not all([vendor_id, node_id, npc_id, vendor_name]):
+                return jsonify({"status": "error", "message": "vendor_id, node_id, npc_id, vendor_name required"}), 400
+            result = self.vendor_manager.create_vendor(vendor_id, node_id, npc_id, vendor_name)
+            return jsonify({"status": "success", "data": result}), 201
+
+        @self.app.route("/api/admin/vendors/<vendor_id>", methods=["PUT"])
+        def admin_update_vendor(vendor_id):
+            body = request.get_json()
+            vendor_name = body.get("vendor_name")
+            if not vendor_name:
+                return jsonify({"status": "error", "message": "vendor_name required"}), 400
+            result = self.vendor_manager.update_vendor(vendor_id, vendor_name)
+            return jsonify({"status": "success", "data": result}), 200
+
+        @self.app.route("/api/admin/vendors/<vendor_id>", methods=["DELETE"])
+        def admin_delete_vendor(vendor_id):
+            result, success = self.vendor_manager.delete_vendor(vendor_id)
+            if not success:
+                return jsonify({"status": "error", "message": result.get("error")}), 400
+            return jsonify({"status": "success", "data": result}), 200
+
+        @self.app.route("/api/admin/items/<vendor_id>", methods=["GET"])
+        def admin_get_items(vendor_id):
+            items = self.vendor_manager.get_items(vendor_id)
+            return jsonify({
+                "status": "success",
+                "data": [{"vendor_id": i[0], "item_id": i[1], "item_name": i[2], "item_description": i[3], "item_value": i[4]} for i in items]
+            }), 200
+
+        @self.app.route("/api/admin/items/<vendor_id>", methods=["POST"])
+        def admin_create_item(vendor_id):
+            body = request.get_json()
+            item_id = body.get("item_id")
+            item_name = body.get("item_name")
+            item_description = body.get("item_description", "")
+            item_value = body.get("item_value", 0)
+            if not item_id or not item_name:
+                return jsonify({"status": "error", "message": "item_id and item_name required"}), 400
+            result = self.vendor_manager.create_item(vendor_id, item_id, item_name, item_description, item_value)
+            return jsonify({"status": "success", "data": result}), 201
+
+        @self.app.route("/api/admin/items/<item_id>", methods=["PUT"])
+        def admin_update_item(item_id):
+            body = request.get_json()
+            item_name = body.get("item_name")
+            item_description = body.get("item_description")
+            item_value = body.get("item_value")
+            if not item_name:
+                return jsonify({"status": "error", "message": "item_name required"}), 400
+            result = self.vendor_manager.update_item(item_id, item_name, item_description or "", item_value or 0)
+            return jsonify({"status": "success", "data": result}), 200
+
+        @self.app.route("/api/admin/items/<item_id>", methods=["DELETE"])
+        def admin_delete_item(item_id):
+            result = self.vendor_manager.delete_item(item_id)
+            return jsonify({"status": "success", "data": result}), 200
 
         self.app.run(host="0.0.0.0", port=8000, debug=False)
 

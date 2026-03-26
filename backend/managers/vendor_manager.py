@@ -33,3 +33,34 @@ class Vendor_Manager(Hok_DB):
     def get_items(self, vendor_id):
         command = "SELECT * FROM items WHERE vendor_id='%s'" % vendor_id
         return self.db.get_data(command)
+
+    def get_all_vendors(self):
+        command = "SELECT * FROM vendors"
+        return self.db.get_data(command)
+
+    def create_vendor(self, vendor_id, node_id, npc_id, vendor_name):
+        self.db.insert("vendors", [{"vendor_id": vendor_id, "node_id": node_id, "npc_id": npc_id, "vendor_name": vendor_name}])
+        return {"vendor_id": vendor_id, "vendor_name": vendor_name}
+
+    def update_vendor(self, vendor_id, vendor_name):
+        self.db.update("vendors", {"vendor_name": vendor_name}, "vendor_id = ?", (vendor_id,))
+        return {"vendor_id": vendor_id, "vendor_name": vendor_name}
+
+    def delete_vendor(self, vendor_id):
+        items = self.get_items(vendor_id)
+        if items:
+            return {"error": "Cannot delete vendor with items"}, False
+        self.db.delete("vendors", "vendor_id = ?", (vendor_id,))
+        return {"message": "Vendor deleted"}, True
+
+    def create_item(self, vendor_id, item_id, item_name, item_description, item_value):
+        self.db.insert("items", [{"vendor_id": vendor_id, "item_id": item_id, "item_name": item_name, "item_description": item_description, "item_value": item_value}])
+        return {"item_id": item_id, "item_name": item_name}
+
+    def update_item(self, item_id, item_name, item_description, item_value):
+        self.db.update("items", {"item_name": item_name, "item_description": item_description, "item_value": item_value}, "item_id = ?", (item_id,))
+        return {"item_id": item_id}
+
+    def delete_item(self, item_id):
+        self.db.delete("items", "item_id = ?", (item_id,))
+        return {"message": "Item deleted"}, True

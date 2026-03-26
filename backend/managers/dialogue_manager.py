@@ -89,3 +89,70 @@ class Dialogue_Manager(Hok_DB):
     def get_key_words(self, dialogue_id):
         command = "SELECT * FROM words WHERE dialogue_id='%s'" % dialogue_id
         return self.db.get_data(command)
+
+    def get_all_npcs(self):
+        command = "SELECT * FROM npcs"
+        return self.db.get_data(command)
+
+    def create_npc(self, npc_id, npc_name):
+        self.db.insert("npcs", [{"npc_id": npc_id, "npc_name": npc_name}])
+        return {"npc_id": npc_id, "npc_name": npc_name}
+
+    def update_npc(self, npc_id, npc_name):
+        self.db.update("npcs", {"npc_name": npc_name}, "npc_id = ?", (npc_id,))
+        return {"npc_id": npc_id, "npc_name": npc_name}
+
+    def delete_npc(self, npc_id):
+        nodes = self.get_nodes_for_npc(npc_id)
+        if nodes:
+            return {"error": "Cannot delete NPC with existing dialogue nodes"}, False
+        self.db.delete("npcs", "npc_id = ?", (npc_id,))
+        return {"message": "NPC deleted"}, True
+
+    def get_nodes_for_npc(self, npc_id):
+        command = "SELECT * FROM dialogue_nodes WHERE npc_id='%s'" % npc_id
+        return self.db.get_data(command)
+
+    def create_node(self, node_id, parent_node_id, npc_id):
+        self.db.insert("dialogue_nodes", [{"node_id": node_id, "parent_node_id": parent_node_id, "npc_id": npc_id}])
+        return {"node_id": node_id, "parent_node_id": parent_node_id, "npc_id": npc_id}
+
+    def update_node(self, node_id, parent_node_id):
+        self.db.update("dialogue_nodes", {"parent_node_id": parent_node_id}, "node_id = ?", (node_id,))
+        return {"node_id": node_id, "parent_node_id": parent_node_id}
+
+    def delete_node(self, node_id):
+        children = self.db.get_data("SELECT node_id FROM dialogue_nodes WHERE parent_node_id = '%s'" % node_id)
+        if children:
+            return {"error": "Cannot delete node with child nodes"}, False
+        self.db.delete("dialogue_nodes", "node_id = ?", (node_id,))
+        self.db.delete("dialogues", "node_id = ?", (node_id,))
+        self.db.delete("options", "node_id = ?", (node_id,))
+        return {"message": "Node deleted"}, True
+
+    def get_dialogue_for_node(self, node_id):
+        return self.get_dialogue(node_id)
+
+    def create_dialogue(self, node_id, dialogue_id, dialogue_text, translation, npc_id):
+        self.db.insert("dialogues", [{"node_id": node_id, "dialogue_id": dialogue_id, "dialogue": dialogue_text, "translation": translation, "audio_clip": "", "npc_id": npc_id}])
+        return {"node_id": node_id, "dialogue_id": dialogue_id, "dialogue": dialogue_text}
+
+    def update_dialogue(self, node_id, dialogue_text, translation):
+        self.db.update("dialogues", {"dialogue": dialogue_text, "translation": translation}, "node_id = ?", (node_id,))
+        return {"node_id": node_id, "dialogue": dialogue_text}
+
+    def get_options_for_node(self, node_id):
+        return self.get_node_options(node_id)
+
+    def create_option(self, node_id, option_id, option_text, next_node_id, feedback_type):
+        self.db.insert("options", [{"node_id": node_id, "option_id": option_id, "option_text": option_text, "next_node_id": next_node_id, "feedback_type": feedback_type}])
+        return {"node_id": node_id, "option_id": option_id, "option_text": option_text}
+
+    def update_option(self, option_id, option_text, next_node_id, feedback_type):
+        self.db.update("options", {"option_text": option_text, "next_node_id": next_node_id, "feedback_type": feedback_type}, "option_id = ?", (option_id,))
+        return {"option_id": option_id}
+
+    def delete_option(self, option_id):
+        self.db.delete("options", "option_id = ?", (option_id,))
+        self.db.delete("events", "option_id = ?", (option_id,))
+        return {"message": "Option deleted"}, True

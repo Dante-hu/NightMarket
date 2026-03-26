@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NightMarket Admin</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root {
+            --accent: #a19afc;
+            --secondary: #94c5e9;
+            --tertiary: #fceaa2;
+            --radius: 2px;
+            --text: #DDDDDD;
+            --subtext: #777777;
+            --hidden: #333333;
+            --base: #080808;
+            --section: #111111;
+            --card: #181818;
+            --overlay: #222222;
+            --red: #e67378;
+            --green: #85ed9b;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--base);
+            color: var(--text);
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .app { display: flex; min-height: 100vh; }
+
+        aside {
+            width: 180px;
+            background: var(--section);
+            border-right: 1px solid var(--hidden);
+            padding: 16px 0;
+        }
+
+        .logo { padding: 0 16px 16px; margin-bottom: 16px; border-bottom: 1px solid var(--hidden); }
+        .logo h1 { font-size: 14px; font-weight: 600; margin: 0 0 4px 0; color: var(--accent); }
+        .logo span { font-size: 10px; color: var(--subtext); text-transform: uppercase; letter-spacing: 1px; }
+
+        nav { padding: 0 8px; }
+
+        .nav-btn {
+            display: block;
+            width: 100%;
+            padding: 8px 12px;
+            background: transparent;
+            border: none;
+            border-radius: var(--radius);
+            color: var(--subtext);
+            font-size: 13px;
+            text-align: left;
+            cursor: pointer;
+            margin-bottom: 2px;
+        }
+
+        .nav-btn:hover { background: var(--card); color: var(--text); }
+        .nav-btn.active { background: var(--card); color: var(--accent); }
+
+        main { flex: 1; padding: 20px; overflow-y: auto; }
+
+        .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+        .page-title { font-size: 16px; font-weight: 500; margin: 0; }
+
+        .btn {
+            padding: 6px 12px;
+            border-radius: var(--radius);
+            font-size: 12px;
+            cursor: pointer;
+            border: 1px solid var(--hidden);
+            background: var(--card);
+            color: var(--text);
+        }
+
+        .btn:hover { background: var(--overlay); }
+        .btn-primary { background: var(--accent); color: var(--base); border-color: var(--accent); }
+
+        .card { background: var(--card); border: 1px solid var(--hidden); border-radius: var(--radius); padding: 12px; margin-bottom: 12px; }
+
+        .input, .select {
+            background: var(--section);
+            border: 1px solid var(--hidden);
+            border-radius: var(--radius);
+            padding: 6px 8px;
+            font-size: 12px;
+            color: var(--text);
+            width: 100%;
+        }
+
+        .input:focus, .select:focus { outline: none; border-color: var(--accent); }
+
+        table { width: 100%; border-collapse: collapse; }
+        th { text-align: left; padding: 8px 10px; font-size: 11px; font-weight: 500; color: var(--subtext); border-bottom: 1px solid var(--hidden); }
+        td { padding: 8px 10px; font-size: 12px; border-bottom: 1px solid var(--hidden); }
+        tr:hover td { background: var(--section); }
+
+        .mono { font-family: 'JetBrains Mono Nerd Font', monospace; font-size: 11px; }
+        .id { color: var(--accent); }
+        .subtext { color: var(--subtext); }
+
+        .link { color: var(--accent); background: none; border: none; cursor: pointer; font-size: 12px; padding: 0; }
+        .link:hover { text-decoration: underline; }
+        .link.danger { color: var(--red); }
+
+        .form-row { display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
+        .form-row .input { flex: 1; min-width: 120px; }
+
+        .tree-node { margin-left: 12px; padding-left: 12px; border-left: 1px solid var(--hidden); }
+        .tree-node:first-child { margin-left: 0; padding-left: 0; border: none; }
+
+        .node-card { background: var(--section); border: 1px solid var(--hidden); border-radius: var(--radius); padding: 8px; margin-bottom: 6px; cursor: pointer; }
+        .node-card:hover { border-color: var(--subtext); }
+        .node-card.expanded { border-color: var(--accent); }
+
+        .node-header { display: flex; align-items: center; gap: 6px; }
+        .node-id { background: var(--card); padding: 2px 4px; border-radius: var(--radius); }
+        .node-preview { flex: 1; color: var(--subtext); font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+        .node-content { display: none; margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--hidden); }
+        .node-card.expanded .node-content { display: block; }
+
+        .node-actions { display: flex; gap: 8px; margin-left: auto; font-size: 11px; }
+
+        .vendor-card { background: var(--card); border: 1px solid var(--hidden); border-radius: var(--radius); margin-bottom: 6px; }
+        .vendor-header { padding: 10px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+        .vendor-header:hover { background: var(--section); }
+        .vendor-info h3 { font-size: 13px; font-weight: 500; margin: 0 0 2px 0; }
+        .vendor-info .meta { font-size: 11px; color: var(--subtext); }
+        .vendor-items { display: none; padding: 10px; border-top: 1px solid var(--hidden); background: var(--base); }
+        .vendor-card.expanded .vendor-items { display: block; }
+
+        .badge { display: inline-block; padding: 2px 6px; background: var(--card); border-radius: var(--radius); font-size: 10px; color: var(--subtext); }
+
+        .empty { text-align: center; padding: 30px; color: var(--subtext); font-size: 12px; }
+
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+    <div class="app">
+        <aside>
+            <div class="logo">
+                <h1>NightMarket</h1>
+                <span>Admin</span>
+            </div>
+            <nav>
+                <button onclick="showPage('npcs')" class="nav-btn" data-page="npcs">NPCs</button>
+                <button onclick="showPage('dialogue')" class="nav-btn" data-page="dialogue">Dialogue Trees</button>
+                <button onclick="showPage('vendors')" class="nav-btn" data-page="vendors">Vendors</button>
+            </nav>
+        </aside>
+
+        <main>
+            <div id="page-npcs" class="page">
+                <div class="page-header">
+                    <h2 class="page-title">NPCs</h2>
+                    <button onclick="showNpcForm()" class="btn btn-primary">+ Add</button>
+                </div>
+                <div id="npc-form" class="card hidden">
+                    <div class="form-row">
+                        <input id="new-npc-id" class="input" placeholder="NPC ID">
+                        <input id="new-npc-name" class="input" placeholder="Name">
+                        <button onclick="createNpc()" class="btn btn-primary">Create</button>
+                        <button onclick="hideNpcForm()" class="btn">Cancel</button>
+                    </div>
+                </div>
+                <div class="card">
+                    <table>
+                        <thead><tr><th>ID</th><th>Name</th><th></th></tr></thead>
+                        <tbody id="npc-table-body"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="page-dialogue" class="page hidden">
+                <div class="page-header">
+                    <h2 class="page-title">Dialogue Trees</h2>
+                </div>
+                <div class="card">
+                    <select id="dialogue-npc-select" onchange="loadDialogueTree()" class="select" style="max-width: 250px;">
+                        <option value="">-- Select NPC --</option>
+                    </select>
+                </div>
+                <div id="dialogue-tree"></div>
+            </div>
+
+            <div id="page-vendors" class="page hidden">
+                <div class="page-header">
+                    <h2 class="page-title">Vendors</h2>
+                    <button onclick="showVendorForm()" class="btn btn-primary">+ Add</button>
+                </div>
+                <div id="vendor-form" class="card hidden">
+                    <div class="form-row">
+                        <input id="new-vendor-id" class="input" placeholder="Vendor ID (optional)">
+                        <input id="new-vendor-name" class="input" placeholder="Name">
+                        <input id="new-vendor-node" class="input" placeholder="Dialogue Node ID">
+                        <input id="new-vendor-npc" class="input" placeholder="NPC ID">
+                        <button onclick="createVendor()" class="btn btn-primary">Create</button>
+                        <button onclick="hideVendorForm()" class="btn">Cancel</button>
+                    </div>
+                </div>
+                <div id="vendors-list"></div>
+            </div>
+        </main>
+    </div>
+
+    <script src="/admin/js/api.js"></script>
+    <script src="/admin/js/npcs.js"></script>
+    <script src="/admin/js/dialogue.js"></script>
+    <script src="/admin/js/vendors.js"></script>
+    <script>
+        function showPage(page) {
+            document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
+            document.getElementById('page-' + page).classList.remove('hidden');
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.page === page);
+            });
+            if (page === 'npcs') loadNpcs();
+            if (page === 'dialogue') loadNpcSelect();
+            if (page === 'vendors') loadVendors();
+        }
+        document.addEventListener('DOMContentLoaded', () => showPage('npcs'));
+    </script>
+</body>
+</html>

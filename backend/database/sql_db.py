@@ -85,3 +85,48 @@ class SQL_DB:
         data = res.fetchall()
         conn.close()
         return data
+
+    def delete(self, table_name, where_clause, params=None):
+        """Delete rows from specified table.
+        
+        Args:
+            table_name: Target table name
+            where_clause: SQL WHERE clause (e.g., "node_id = ?")
+            params: Tuple of parameters for the WHERE clause
+        """
+        try:
+            conn = self.get_connection()
+            cursor = conn.cursor()
+            query = f"DELETE FROM {table_name} WHERE {where_clause}"
+            cursor.execute(query, params or ())
+            conn.commit()
+            affected = cursor.rowcount
+            conn.close()
+            return affected
+        except Exception as e:
+            print(f"Error deleting from {table_name}: {e}")
+            return 0
+
+    def update(self, table_name, data, where_clause, params=None):
+        """Update rows in specified table.
+        
+        Args:
+            table_name: Target table name
+            data: Dictionary of field-value pairs to update
+            where_clause: SQL WHERE clause
+            params: Tuple of parameters for the WHERE clause
+        """
+        try:
+            conn = self.get_connection()
+            cursor = conn.cursor()
+            set_clause = ', '.join([f"{key} = ?" for key in data.keys()])
+            query = f"UPDATE {table_name} SET {set_clause} WHERE {where_clause}"
+            values = list(data.values()) + list(params or ())
+            cursor.execute(query, values)
+            conn.commit()
+            affected = cursor.rowcount
+            conn.close()
+            return affected
+        except Exception as e:
+            print(f"Error updating {table_name}: {e}")
+            return 0
