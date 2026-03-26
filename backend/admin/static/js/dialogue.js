@@ -118,15 +118,63 @@ async function loadOptions(nodeId) {
     try {
         const res = await API.dialogue.getOptions(nodeId);
         const container = document.getElementById('options-' + nodeId);
+        const children = dialogueNodes.filter(n => n.parent_node_id === nodeId);
+        
+        let nextNodeOptions = '';
+        if (children.length > 0) {
+            nextNodeOptions = children.map(c => `<option value="${c.node_id}">${c.node_id}</option>`).join('');
+        }
+        
         container.innerHTML = res.data.map(o => `
             <div style="display: flex; gap: 6px; margin-bottom: 4px; align-items: center;">
-                <input type="text" id="opt-text-${o.option_id}" value="${(o.option_text || '').replace(/"/g, '&quot;')}" onchange="updateOption('${o.option_id}', this.value, document.getElementById('opt-next-${o.option_id}').value)" class="input" style="flex: 1;" placeholder="Option text...">
+                <input type="text" id="opt-text-${o.option_id}" value="${(o.option_text || '').replace(/"/g, '&quot;')}" onchange="updateOption('${o.option_id}', this.value, getNextNodeValue('${o.option_id}'))" class="input" style="flex: 1;" placeholder="Option text...">
                 <span style="color: var(--subtext); font-size: 10px;">→</span>
-                <input type="text" id="opt-next-${o.option_id}" value="${o.next_node_id || ''}" onchange="updateOption('${o.option_id}', document.getElementById('opt-text-${o.option_id}').value, this.value)" class="input" style="width: 80px;" placeholder="next node">
+                ${children.length > 0 ? `
+                    <select id="opt-next-sel-${o.option_id}" onchange="syncNextNode('${o.option_id}', this.value)" class="input" style="width: 100px;">
+                        <option value="">-- select --</option>
+                        ${nextNodeOptions}
+                    </select>
+                ` : ''}
+                <input type="text" id="opt-next-${o.option_id}" value="${o.next_node_id || ''}" onchange="syncFromInput('${o.option_id}', this.value)" class="input" style="width: 80px;" placeholder="next node">
                 <button onclick="deleteOption('${o.option_id}', '${nodeId}')" class="link danger">×</button>
             </div>
         `).join('') || '<div class="empty" style="padding: 8px;">No options</div>';
+        
+        res.data.forEach(o => {
+            const select = document.getElementById('opt-next-sel-' + o.option_id);
+            const input = document.getElementById('opt-next-' + o.option_id);
+            if (select && o.next_node_id) {
+                select.value = o.next_node_id;
+            }
+            if (select && input) {
+                select.dataset.partner = 'opt-next-' + o.option_id;
+                input.dataset.partner = 'opt-next-sel-' + o.option_id;
+            }
+        });
     } catch (e) { console.error(e.message); }
+}
+
+function getNextNodeValue(optionId) {
+    const select = document.getElementById('opt-next-sel-' + optionId);
+    const input = document.getElementById('opt-next-' + optionId);
+    return (select && select.value) ? select.value : (input ? input.value : '');
+}
+
+function syncNextNode(optionId, value) {
+    const input = document.getElementById('opt-next-' + optionId);
+    if (input) input.value = value;
+    const text = document.getElementById('opt-text-' + optionId).value;
+    updateOption(optionId, text, value);
+}
+
+function syncFromInput(optionId, value) {
+    const select = document.getElementById('opt-next-sel-' + optionId);
+    if (select) {
+        const hasOption = select.querySelector('option[value="' + value + '"]');
+        if (hasOption) select.value = value;
+    }
+    const text = document.getElementById('opt-text-' + optionId).value;
+    updateOption(optionId, text, value);
 }
 
 async function saveDialogue(nodeId) {
