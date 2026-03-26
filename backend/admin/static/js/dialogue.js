@@ -2,6 +2,17 @@ let dialogueNodes = [];
 let selectedNpcId = '';
 let expandedNodes = new Set();
 
+function getSiblingIndex(parentId) {
+    const siblings = dialogueNodes.filter(n => n.parent_node_id === parentId);
+    return siblings.length;
+}
+
+function generateNodeId(parentId) {
+    const index = getSiblingIndex(parentId);
+    const letter = String.fromCharCode(97 + index);
+    return 'n_' + letter + '_' + Date.now();
+}
+
 async function loadNpcSelect() {
     try {
         const res = await API.npcs.getAll();
@@ -35,7 +46,6 @@ function renderDialogueTree() {
     container.innerHTML = rootNodes.map(node => renderNode(node, 0)).join('') + 
         '<button onclick="addRootNode()" class="btn" style="margin-top: 8px;">+ Add Root Node</button>';
     
-    // Restore expanded states
     setTimeout(() => restoreExpandedStates(), 0);
 }
 
@@ -43,12 +53,9 @@ function restoreExpandedStates() {
     expandedNodes.forEach(nodeId => {
         const card = document.getElementById('node-card-' + nodeId);
         const content = document.getElementById('node-' + nodeId);
-        const children = document.getElementById('children-' + nodeId);
         if (card && content) {
             card.classList.add('expanded');
             content.style.display = 'block';
-            if (children) children.style.display = 'block';
-            // Load options for expanded nodes
             loadOptions(nodeId);
         }
     });
@@ -186,19 +193,13 @@ async function saveDialogue(nodeId) {
 }
 
 async function addChildNode(parentId) {
-    const existingIds = dialogueNodes.map(n => n.node_id);
-    let nodeId = 'n_' + Date.now();
-    let counter = 1;
-    while (existingIds.includes(nodeId)) {
-        nodeId = 'n_' + Date.now() + '_' + counter++;
-    }
+    const nodeId = generateNodeId(parentId);
     await API.dialogue.createNode({ node_id: nodeId, parent_node_id: parentId, npc_id: selectedNpcId });
     expandedNodes.add(parentId);
     loadDialogueTree();
 }
 
 async function deleteNode(nodeId) {
-    // Check if node has children
     const children = dialogueNodes.filter(n => n.parent_node_id === nodeId);
     if (children.length > 0) {
         alert('Cannot delete node with child nodes. Delete child nodes first.');
@@ -216,12 +217,7 @@ async function deleteNode(nodeId) {
 }
 
 async function addRootNode() {
-    const existingIds = dialogueNodes.map(n => n.node_id);
-    let nodeId = 'n_' + Date.now();
-    let counter = 1;
-    while (existingIds.includes(nodeId)) {
-        nodeId = 'n_' + Date.now() + '_' + counter++;
-    }
+    const nodeId = generateNodeId('n_000');
     await API.dialogue.createNode({ node_id: nodeId, parent_node_id: 'n_000', npc_id: selectedNpcId });
     expandedNodes.add(nodeId);
     loadDialogueTree();
