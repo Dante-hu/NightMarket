@@ -77,8 +77,8 @@ function restoreExpandedStates() {
 function renderNode(node, depth) {
     const children = dialogueNodes.filter(n => n.parent_node_id === node.node_id);
     const dialogue = node.dialogue || {};
-    const audio = dialogue.audio_src;
     console.log(dialogue)
+    const audio = `data:audio/wav;base64,${dialogue.audio_src.audio_binary}`;
     const preview = dialogue.dialogue || '(empty)';
     const hasChildren = children.length > 0;
     const margin = Math.min(depth * 16, 48);
@@ -108,14 +108,16 @@ function renderNode(node, depth) {
                     </div>
                     <div style="margin-bottom: 8px;">
                         <label style="display: block; font-size: 10px; color: var(--subtext); margin-bottom: 4px;">Translation</label>
-                        <audio controls>
-                            <source src="${dialogue.audio_src}" type="audio/wav">
-                            Your browser does not support the audio element.
-                            </source>
-                        </audio>
-                        <button onclick="" class="gen-btn">Generate Audio</button>
+                        <div style="display: flex; gap:20px; align-items: center;">
+                            <audio controls>
+                                <source src="${audio}" type="audio/wav">
+                                Your browser does not support the audio element.
+                                </source>
+                            </audio>
+                            <p>Audio Source: ${dialogue.audio_src.audio_path || "No source"}</p>
+                        </div>
+                        <button onclick="generateTTS('${dialogue.translation || ''}','${node.node_id}')" class="gen-btn">Generate Audio</button>
                     </div>
-
                     <span id="save-status-${node.node_id}" class="subtext" style="font-size: 10px;"></span>
                     <div style="margin-bottom: 4px;">
                         <button onclick="addOption('${node.node_id}')" class="link">+ Add Option</button>
@@ -285,20 +287,34 @@ async function deleteOption(optionId, nodeId) {
     loadDialogueTree();
 }
 
-// Todo:
-// Prevent additional actions when translation is generating
 async function generateTranslations(dialougeText, nodeId){
     const statusEl = document.getElementById('save-status-' + nodeId);
+    const buttonEl = document.querySelectorAll(".gen-btn");
     if (dialougeText == "") { return }
-    console.log(dialougeText)
-    console.log(nodeId)
     try {
-        await API.model.generate(nodeId, { output_lang: "POJ", input_text: dialougeText });
         statusEl.textContent = 'Generating translations';
         setTimeout(() => statusEl.textContent = '', 2000);
+        buttonEl.forEach(btn => { btn.disabled = true });
+        await API.model.translate(nodeId, { output_lang: "POJ", input_text: dialougeText });
     } catch (e) {
         console.log(e) 
         statusEl.textContent = 'Error generating translations';
+    }
+    loadDialogueTree();
+}
+
+async function generateTTS(translated_text, nodeId){
+    const statusEl = document.getElementById('save-status-' + nodeId);
+    const buttonEl = document.querySelectorAll(".gen-btn");
+    if (translated_text == "") { return }
+    try {
+        statusEl.textContent = 'Generating audio';
+        setTimeout(() => statusEl.textContent = '', 2000);
+        buttonEl.forEach(btn => { btn.disabled = true });
+        await API.model.tts(nodeId, { translation_text: translated_text });
+    } catch (e) {
+        console.log(e) 
+        statusEl.textContent = 'Error generating audio';
     }
     loadDialogueTree();
 }

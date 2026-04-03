@@ -45,6 +45,7 @@ const API = {
     },
 
     model: {
-        generate: (id, data) => API.post(`/api/admin/model/translate/${id}`, data)
+        translate: (id, data) => API.post(`/api/admin/model/translate/${id}`, data),
+        tts: (id, data) => API.post(`/api/admin/model/tts/${id}`, data)
     }
 };
