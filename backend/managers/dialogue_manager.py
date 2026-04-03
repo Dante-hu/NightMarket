@@ -137,8 +137,8 @@ class Dialogue_Manager(Hok_DB):
         self.db.insert("dialogues", [{"node_id": node_id, "dialogue_id": dialogue_id, "dialogue": dialogue_text, "translation": translation, "audio_clip": "", "npc_id": npc_id}])
         return {"node_id": node_id, "dialogue_id": dialogue_id, "dialogue": dialogue_text}
 
-    def update_dialogue(self, node_id, dialogue_text, translation):
-        self.db.update("dialogues", {"dialogue": dialogue_text, "translation": translation}, "node_id = ?", (node_id,))
+    def update_dialogue(self, node_id, dialogue_text, translation, audio_path):
+        self.db.update("dialogues", {"dialogue": dialogue_text, "translation": translation, "audio_clip": audio_path}, "node_id = ?", (node_id,))
         return {"node_id": node_id, "dialogue": dialogue_text}
 
     def get_options_for_node(self, node_id):

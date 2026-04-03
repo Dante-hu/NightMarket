@@ -1,10 +1,13 @@
 from flask import Flask, request, jsonify, send_from_directory
+#from models.hok_tts import generate_tts
+from models.hok_translation import translate
 from database.hok_db import Hok_DB
 from managers.dialogue_manager import Dialogue_Manager
 from managers.vendor_manager import Vendor_Manager
 from managers.challenge_manager import Challenge_Manager
 import base64
 import os
+import re
 
 class App:
     def __init__(self, mode=2):
@@ -563,7 +566,7 @@ class App:
             for node in nodes:
                 d = self.dialogue_manager.get_dialogue(node[0])
                 if d:
-                    dialogues[node[0]] = {"dialogue_id": d[0][1], "dialogue": d[0][2], "translation": d[0][3]}
+                    dialogues[node[0]] = {"dialogue_id": d[0][1], "dialogue": d[0][2], "translation": d[0][3], "audio_src": d[0][4]}
             return jsonify({
                 "status": "success",
                 "data": [{"node_id": n[0], "parent_node_id": n[1], "npc_id": n[2], "dialogue": dialogues.get(n[0])} for n in nodes]
@@ -605,7 +608,7 @@ class App:
                 return jsonify({"status": "error", "message": "Dialogue not found"}), 404
             return jsonify({
                 "status": "success",
-                "data": {"node_id": d[0][0], "dialogue_id": d[0][1], "dialogue": d[0][2], "translation": d[0][3], "npc_id": d[0][5]}
+                "data": {"node_id": d[0][0], "dialogue_id": d[0][1], "dialogue": d[0][2], "translation": d[0][3], "audio_clip": d[0][4], "npc_id": d[0][5]}
             }), 200
 
         @self.app.route("/api/admin/dialogues/<node_id>", methods=["PUT"])
@@ -615,7 +618,7 @@ class App:
             translation = body.get("translation")
             if dialogue_text is None:
                 return jsonify({"status": "error", "message": "dialogue required"}), 400
-            result = self.dialogue_manager.update_dialogue(node_id, dialogue_text, translation or "")
+            result = self.dialogue_manager.update_dialogue(node_id, dialogue_text, translation, "" or "")
             return jsonify({"status": "success", "data": result}), 200
 
         @self.app.route("/api/admin/options/<node_id>", methods=["GET"])
@@ -731,6 +734,18 @@ class App:
         @self.app.route("/api/admin/items/<item_id>", methods=["DELETE"])
         def admin_delete_item(item_id):
             result = self.vendor_manager.delete_item(item_id)
+            return jsonify({"status": "success", "data": result}), 200
+
+        @self.app.route("/api/admin/model/translate/<node_id>", methods=["POST"])
+        def admin_model_generate(node_id):
+            body = request.get_json()
+            output_lang = body.get("output_lang")
+            dialogue_text = body.get("input_text")
+            # Todo:
+            # Output of translation model needs to be cleaned
+            translation = translate(dialogue_text, output_lang)
+            dialogue = self.dialogue_manager.get_dialogue(node_id)
+            result = self.dialogue_manager.update_dialogue(node_id, dialogue_text, translation, dialogue[0][4] or "")
             return jsonify({"status": "success", "data": result}), 200
 
         self.app.run(host="0.0.0.0", port=8000, debug=False)

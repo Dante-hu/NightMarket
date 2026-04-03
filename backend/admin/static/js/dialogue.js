@@ -77,6 +77,8 @@ function restoreExpandedStates() {
 function renderNode(node, depth) {
     const children = dialogueNodes.filter(n => n.parent_node_id === node.node_id);
     const dialogue = node.dialogue || {};
+    const audio = dialogue.audio_src;
+    console.log(dialogue)
     const preview = dialogue.dialogue || '(empty)';
     const hasChildren = children.length > 0;
     const margin = Math.min(depth * 16, 48);
@@ -102,7 +104,18 @@ function renderNode(node, depth) {
                     <div style="margin-bottom: 8px;">
                         <label style="display: block; font-size: 10px; color: var(--subtext); margin-bottom: 4px;">Translation</label>
                         <input id="translation-${node.node_id}" class="input" value="${dialogue.translation || ''}" oninput="autoSave('${node.node_id}')" placeholder="Enter translation...">
+                        <button onclick="generateTranslations('${dialogue.dialogue || ""}','${node.node_id}')" class="gen-btn">Generate Translations</button>
                     </div>
+                    <div style="margin-bottom: 8px;">
+                        <label style="display: block; font-size: 10px; color: var(--subtext); margin-bottom: 4px;">Translation</label>
+                        <audio controls>
+                            <source src="${dialogue.audio_src}" type="audio/wav">
+                            Your browser does not support the audio element.
+                            </source>
+                        </audio>
+                        <button onclick="" class="gen-btn">Generate Audio</button>
+                    </div>
+
                     <span id="save-status-${node.node_id}" class="subtext" style="font-size: 10px;"></span>
                     <div style="margin-bottom: 4px;">
                         <button onclick="addOption('${node.node_id}')" class="link">+ Add Option</button>
@@ -269,5 +282,23 @@ async function deleteOption(optionId, nodeId) {
     if (!confirm('Delete option?')) return;
     await API.dialogue.deleteOption(optionId);
     expandedNodes.add(nodeId);
+    loadDialogueTree();
+}
+
+// Todo:
+// Prevent additional actions when translation is generating
+async function generateTranslations(dialougeText, nodeId){
+    const statusEl = document.getElementById('save-status-' + nodeId);
+    if (dialougeText == "") { return }
+    console.log(dialougeText)
+    console.log(nodeId)
+    try {
+        await API.model.generate(nodeId, { output_lang: "POJ", input_text: dialougeText });
+        statusEl.textContent = 'Generating translations';
+        setTimeout(() => statusEl.textContent = '', 2000);
+    } catch (e) {
+        console.log(e) 
+        statusEl.textContent = 'Error generating translations';
+    }
     loadDialogueTree();
 }

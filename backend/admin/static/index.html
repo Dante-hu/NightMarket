@@ -85,6 +85,22 @@
         .btn:hover { background: var(--overlay); }
         .btn-primary { background: var(--accent); color: var(--base); border-color: var(--accent); }
 
+        .gen-btn {
+            display: block;
+            width: 100%;
+            padding: 6px 12px;
+            background: var(--accent);
+            border: none;
+            border-radius: var(--radius);
+            color: var(--base);
+            font-size: 13px;
+            text-align: center;
+            cursor: pointer;
+            margin-bottom: 2px;
+        }
+        .gen-btn:hover { background: var(--card); color: var(--text); }
+        .gen-btn.active { background: var(--card); color: var(--accent); }
+
         .card { background: var(--card); border: 1px solid var(--hidden); border-radius: var(--radius); padding: 12px; margin-bottom: 12px; }
 
         .input, .select {

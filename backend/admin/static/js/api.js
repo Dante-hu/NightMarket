@@ -42,5 +42,9 @@ const API = {
         createItem: (vendorId, data) => API.post(`/api/admin/items/${vendorId}`, data),
         updateItem: (id, data) => API.put(`/api/admin/items/${id}`, data),
         deleteItem: (id) => API.delete(`/api/admin/items/${id}`)
+    },
+
+    model: {
+        generate: (id, data) => API.post(`/api/admin/model/translate/${id}`, data)
     }
 };
