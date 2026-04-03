@@ -114,16 +114,16 @@ function renderNode(node, depth) {
                     </div>
                     <div style="margin-bottom: 8px;">
                         <label style="display: block; font-size: 10px; color: var(--subtext); margin-bottom: 4px;">Translation</label>
-                        <input id="translation-${node.node_id}" class="input" value="${dialogue.translation || ''}" oninput="autoSave('${node.node_id}')" placeholder="Enter translation...">
-                        <button onclick="generateTranslations('${dialogueText}','${nodeId}')" class="gen-btn">Generate Translations</button>
+                        <input id="translation-${nodeId}" class="input" value="${dialogue.translation || ''}" oninput="autoSave('${nodeId}')" placeholder="Enter translation...">
+                        <button data-text="${dialogueText}" data-node="${nodeId}" onclick="generateTranslations(this.dataset.text, this.dataset.node)" class="gen-btn">Generate Translations</button>
                     </div>
                     <div style="margin-bottom: 8px;">
                         <label style="display: block; font-size: 10px; color: var(--subtext); margin-bottom: 4px;">Audio</label>
                         ${hasAudio ? `
-                        <div class="audio-player" data-node-id="${node.node_id}">
-                            <button class="audio-play-btn" onclick="toggleAudio(this, '${node.node_id}')"></button>
+                        <div class="audio-player" data-node-id="${nodeId}">
+                            <button class="audio-play-btn" onclick="toggleAudio(this, '${nodeId}')"></button>
                             <span class="audio-time">0:00</span>
-                            <div class="audio-progress" onmousedown="startSeek(event, this, '${node.node_id}')">
+                            <div class="audio-progress" onmousedown="startSeek(event, this, '${nodeId}')">
                                 <div class="audio-progress-fill"></div>
                             </div>
                             <span class="audio-time">0:00</span>
@@ -478,7 +478,7 @@ function onVolumeDrag(event) {
         const deltaX = event.clientX - volumeStartX;
         const deltaPercent = deltaX / rect.width;
         let newPercent = volumeStartPercent + deltaPercent;
-        newPercent = Math.max(0, Math.min(1.5, newPercent));
+        newPercent = Math.max(0, Math.min(1, newPercent));
         
         const audio = document.getElementById('audio-' + volumeNodeId);
         if (audio) {
@@ -488,13 +488,7 @@ function onVolumeDrag(event) {
         
         const fill = sliderEl.querySelector('.audio-volume-fill');
         if (fill) {
-            if (newPercent > 1.0) {
-                fill.style.width = '100%';
-                fill.style.backgroundColor = 'var(--accent)';
-            } else {
-                fill.style.width = (newPercent * 100) + '%';
-                fill.style.backgroundColor = 'var(--accent)';
-            }
+            fill.style.width = (newPercent * 100) + '%';
         }
         
         const volBtn = sliderEl.parentElement.querySelector('.audio-volume-btn');
@@ -523,20 +517,14 @@ function setVolume(event, sliderEl, nodeId) {
     } else {
         percent = x / rect.width;
     }
-    percent = Math.max(0, Math.min(1.5, percent));
+    percent = Math.max(0, Math.min(1, percent));
     
     audio.volume = percent;
     audio.dataset.volume = percent;
     
     const fill = sliderEl.querySelector('.audio-volume-fill');
     if (fill) {
-        if (percent > 1.0) {
-            fill.style.width = '100%';
-            fill.style.backgroundColor = 'var(--accent)';
-        } else {
-            fill.style.width = (percent * 100) + '%';
-            fill.style.backgroundColor = 'var(--accent)';
-        }
+        fill.style.width = (percent * 100) + '%';
     }
     
     const volBtn = sliderEl.parentElement.querySelector('.audio-volume-btn');
@@ -559,7 +547,7 @@ function toggleMute(btn, nodeId) {
     const fill = player.querySelector('.audio-volume-fill');
     const vol = audio.volume;
     if (fill) {
-        fill.style.width = Math.min(100, (vol / 1.0) * 100) + '%';
+        fill.style.width = (vol * 100) + '%';
     }
     btn.classList.toggle('muted', vol === 0);
 }
