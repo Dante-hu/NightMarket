@@ -746,8 +746,6 @@ class App:
             body = request.get_json()
             output_lang = body.get("output_lang")
             dialogue_text = body.get("input_text")
-            # Todo:
-            # Output of translation model needs to be cleaned
             translation = translate(dialogue_text, output_lang)
             dialogue = self.dialogue_manager.get_dialogue(node_id)
             result = self.dialogue_manager.update_dialogue(node_id, dialogue[0][2], translation, dialogue[0][4] or "")
