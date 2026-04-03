@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify, send_from_directory
-from models.hok_tts import generate_tts
-from models.hok_translation import translate
+from models.hok_translation import HokTranslation
+from models.hok_tts import HokTTS
 from database.hok_db import Hok_DB
 from managers.dialogue_manager import Dialogue_Manager
 from managers.vendor_manager import Vendor_Manager
@@ -25,6 +25,9 @@ class App:
         self.dialogue_manager = Dialogue_Manager(self.mode)
         self.vendor_manager = Vendor_Manager(self.mode)
         self.challenge_manager = Challenge_Manager(self.mode)
+        self.hokTTS = HokTTS(self.mode)
+        self.hokTranslation = HokTranslation(self.mode)
+            
         self.app = Flask(import_name="Hokkien Game")
 
     def create_endpoints(self):
@@ -746,7 +749,7 @@ class App:
             body = request.get_json()
             output_lang = body.get("output_lang")
             dialogue_text = body.get("input_text")
-            translation = translate(dialogue_text, output_lang)
+            translation = self.hokTranslation.translate(dialogue_text, output_lang)
             dialogue = self.dialogue_manager.get_dialogue(node_id)
             result = self.dialogue_manager.update_dialogue(node_id, dialogue[0][2], translation, dialogue[0][4] or "")
             return jsonify({"status": "success", "data": result}), 200
@@ -755,7 +758,7 @@ class App:
         def admin_model_generate_tts(node_id):
             body = request.get_json()
             translation = body.get("translation_text")
-            audio_src = generate_tts(node_id, translation)
+            audio_src = self.hokTTS.generate_tts(node_id, translation)
             dialogue = self.dialogue_manager.get_dialogue(node_id)
             result = self.dialogue_manager.update_dialogue(node_id, dialogue[0][2], dialogue[0][3], audio_src or "")
             return jsonify({"status": "success", "data": result}), 200
