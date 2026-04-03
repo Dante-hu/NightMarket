@@ -23,6 +23,12 @@
               with python-pkgs; [
                 ruff
                 flask
+                scipy
+                transformers
+                accelerate
+                torch
+                tiktoken
+                sentencepiece
               ])
           )
         ];
