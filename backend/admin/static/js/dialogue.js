@@ -77,11 +77,12 @@ function restoreExpandedStates() {
 function renderNode(node, depth) {
     const children = dialogueNodes.filter(n => n.parent_node_id === node.node_id);
     const dialogue = node.dialogue || {};
-    console.log(dialogue)
-    const audio = `data:audio/wav;base64,${dialogue.audio_src.audio_binary}`;
     const preview = dialogue.dialogue || '(empty)';
     const hasChildren = children.length > 0;
     const margin = Math.min(depth * 16, 48);
+    const audioBinary = dialogue.audio_src?.audio_binary;
+    const hasAudio = audioBinary && audioBinary.length > 0;
+    const audioSrc = hasAudio ? `data:audio/wav;base64,${audioBinary}` : '';
 
     return `
         <div style="margin-left: ${margin}px;">
@@ -91,6 +92,7 @@ function renderNode(node, depth) {
                     ${hasChildren ? '<span style="color: var(--subtext); font-size: 8px;">▼</span>' : '<span style="color: var(--subtext); font-size: 8px;">○</span>'}
                     <span class="mono node-id" onclick="event.stopPropagation(); copyId('${node.node_id}', event)" title="Click to copy" style="cursor:pointer;">${node.node_id}</span>
                     <span class="node-preview">${preview.substring(0, 50)}${preview.length > 50 ? '...' : ''}</span>
+                    <span id="save-status-${node.node_id}" class="subtext" style="font-size: 10px; margin-left: auto; min-width: 60px; text-align: right;"></span>
                     <div class="node-actions">
                         <button onclick="event.stopPropagation(); addChildNode('${node.node_id}')" class="link">+ Child</button>
                         <button onclick="event.stopPropagation(); deleteNode('${node.node_id}')" class="link danger">Delete</button>
@@ -107,18 +109,30 @@ function renderNode(node, depth) {
                         <button onclick="generateTranslations('${dialogue.dialogue || ""}','${node.node_id}')" class="gen-btn">Generate Translations</button>
                     </div>
                     <div style="margin-bottom: 8px;">
-                        <label style="display: block; font-size: 10px; color: var(--subtext); margin-bottom: 4px;">Translation</label>
-                        <div style="display: flex; gap:20px; align-items: center;">
-                            <audio controls>
-                                <source src="${audio}" type="audio/wav">
-                                Your browser does not support the audio element.
-                                </source>
-                            </audio>
-                            <p>Audio Source: ${dialogue.audio_src.audio_path || "No source"}</p>
+                        <label style="display: block; font-size: 10px; color: var(--subtext); margin-bottom: 4px;">Audio</label>
+                        ${hasAudio ? `
+                        <div class="audio-player" data-node-id="${node.node_id}">
+                            <button class="audio-play-btn" onclick="toggleAudio(this, '${node.node_id}')"></button>
+                            <span class="audio-time">0:00</span>
+                            <div class="audio-progress" onmousedown="startSeek(event, this, '${node.node_id}')">
+                                <div class="audio-progress-fill"></div>
+                            </div>
+                            <span class="audio-time">0:00</span>
+                            <div class="audio-volume">
+                                <button class="audio-volume-btn" onclick="toggleMute(this, '${node.node_id}')"></button>
+                                <div class="audio-volume-slider" onmousedown="startVolume(event, this, '${node.node_id}')">
+                                    <div class="audio-volume-fill"></div>
+                                </div>
+                            </div>
                         </div>
+                        <audio id="audio-${node.node_id}" preload="metadata" style="display: none;">
+                            <source src="${audioSrc}" type="audio/wav">
+                        </audio>
+                        ` : `
+                        <span class="subtext" style="font-size: 10px; display: block; margin-bottom: 6px;">No audio generated</span>
+                        `}
                         <button onclick="generateTTS('${dialogue.translation || ''}','${node.node_id}')" class="gen-btn">Generate Audio</button>
                     </div>
-                    <span id="save-status-${node.node_id}" class="subtext" style="font-size: 10px;"></span>
                     <div style="margin-bottom: 4px;">
                         <button onclick="addOption('${node.node_id}')" class="link">+ Add Option</button>
                     </div>
@@ -231,9 +245,9 @@ async function autoSave(nodeId) {
         try {
             await API.dialogue.updateDialogue(nodeId, { dialogue, translation });
             statusEl.textContent = 'Saved';
-            setTimeout(() => statusEl.textContent = '', 2000);
+            setTimeout(() => { if (statusEl.textContent === 'Saved') statusEl.textContent = ''; }, 2000);
         } catch (e) {
-            statusEl.textContent = 'Error saving';
+            statusEl.textContent = 'Error';
         }
     }, 500);
 }
@@ -287,34 +301,262 @@ async function deleteOption(optionId, nodeId) {
     loadDialogueTree();
 }
 
-async function generateTranslations(dialougeText, nodeId){
+async function generateTranslations(dialogueText, nodeId){
     const statusEl = document.getElementById('save-status-' + nodeId);
-    const buttonEl = document.querySelectorAll(".gen-btn");
-    if (dialougeText == "") { return }
+    const btnEl = event.target;
+    if (dialogueText == "") { return }
     try {
-        statusEl.textContent = 'Generating translations';
-        setTimeout(() => statusEl.textContent = '', 2000);
-        buttonEl.forEach(btn => { btn.disabled = true });
-        await API.model.translate(nodeId, { output_lang: "POJ", input_text: dialougeText });
+        btnEl.classList.add('loading');
+        btnEl.disabled = true;
+        btnEl.textContent = 'Generating...';
+        statusEl.textContent = 'Translating...';
+        await API.model.translate(nodeId, { output_lang: "POJ", input_text: dialogueText });
+        statusEl.textContent = 'Done';
+        btnEl.classList.add('success');
+        btnEl.textContent = 'Generated';
     } catch (e) {
         console.log(e) 
-        statusEl.textContent = 'Error generating translations';
+        statusEl.textContent = 'Error';
+        btnEl.classList.add('error');
+        btnEl.textContent = 'Failed';
+    } finally {
+        btnEl.classList.remove('loading');
+        btnEl.disabled = false;
+        setTimeout(() => {
+            btnEl.classList.remove('error', 'success');
+            btnEl.textContent = 'Generate Translations';
+        }, 2000);
     }
     loadDialogueTree();
 }
 
-async function generateTTS(translated_text, nodeId){
+async function generateTTS(translatedText, nodeId){
     const statusEl = document.getElementById('save-status-' + nodeId);
-    const buttonEl = document.querySelectorAll(".gen-btn");
-    if (translated_text == "") { return }
+    const btnEl = event.target;
+    if (translatedText == "") { return }
     try {
-        statusEl.textContent = 'Generating audio';
-        setTimeout(() => statusEl.textContent = '', 2000);
-        buttonEl.forEach(btn => { btn.disabled = true });
-        await API.model.tts(nodeId, { translation_text: translated_text });
+        btnEl.classList.add('loading');
+        btnEl.disabled = true;
+        btnEl.textContent = 'Generating...';
+        statusEl.textContent = 'Generating...';
+        await API.model.tts(nodeId, { translation_text: translatedText });
+        statusEl.textContent = 'Done';
+        btnEl.classList.add('success');
+        btnEl.textContent = 'Generated';
     } catch (e) {
         console.log(e) 
-        statusEl.textContent = 'Error generating audio';
+        statusEl.textContent = 'Error';
+        btnEl.classList.add('error');
+        btnEl.textContent = 'Failed';
+    } finally {
+        btnEl.classList.remove('loading');
+        btnEl.disabled = false;
+        setTimeout(() => {
+            btnEl.classList.remove('error', 'success');
+            btnEl.textContent = 'Generate Audio';
+        }, 2000);
     }
     loadDialogueTree();
+}
+
+function toggleAudio(btn, nodeId) {
+    const audio = document.getElementById('audio-' + nodeId);
+    const player = btn.closest('.audio-player');
+    if (!audio || !player) return;
+    
+    if (audio.paused) {
+        document.querySelectorAll('.audio-play-btn.playing').forEach(b => {
+            const otherAudio = document.getElementById('audio-' + b.closest('.audio-player').dataset.nodeId);
+            if (otherAudio) { otherAudio.pause(); otherAudio.currentTime = 0; }
+            b.classList.remove('playing');
+        });
+        audio.play();
+        btn.classList.add('playing');
+        audio.addEventListener('timeupdate', () => updateAudioProgress(nodeId));
+        audio.addEventListener('ended', () => {
+            btn.classList.remove('playing');
+            const fill = player.querySelector('.audio-progress-fill');
+            const timeEl = player.querySelectorAll('.audio-time');
+            if (fill) fill.style.width = '0%';
+            if (timeEl[0]) timeEl[0].textContent = '0:00';
+            if (timeEl[1]) timeEl[1].textContent = formatTime(audio.duration);
+        });
+        if (isNaN(audio.duration)) {
+            audio.addEventListener('loadedmetadata', () => {
+                const timeEl = player.querySelectorAll('.audio-time');
+                if (timeEl[1]) timeEl[1].textContent = formatTime(audio.duration);
+            }, { once: true });
+        } else {
+            const timeEl = player.querySelectorAll('.audio-time');
+            if (timeEl[1]) timeEl[1].textContent = formatTime(audio.duration);
+        }
+    } else {
+        audio.pause();
+        btn.classList.remove('playing');
+    }
+}
+
+function updateAudioProgress(nodeId) {
+    const audio = document.getElementById('audio-' + nodeId);
+    const player = document.querySelector(`.audio-player[data-node-id="${nodeId}"]`);
+    if (!audio || !player) return;
+    
+    const fill = player.querySelector('.audio-progress-fill');
+    const timeEl = player.querySelectorAll('.audio-time');
+    const progress = (audio.currentTime / audio.duration) * 100;
+    
+    if (fill) fill.style.width = progress + '%';
+    if (timeEl[0]) timeEl[0].textContent = formatTime(audio.currentTime);
+}
+
+let isSeeking = false;
+let seekNodeId = null;
+
+function startSeek(event, progressEl, nodeId) {
+    isSeeking = true;
+    seekNodeId = nodeId;
+    seekAudio(event, progressEl, nodeId);
+    document.addEventListener('mousemove', onSeek);
+    document.addEventListener('mouseup', stopSeek);
+}
+
+function onSeek(event) {
+    if (!isSeeking || !seekNodeId) return;
+    const progressEl = document.querySelector(`.audio-player[data-node-id="${seekNodeId}"] .audio-progress`);
+    if (progressEl) seekAudio(event, progressEl, seekNodeId);
+}
+
+function stopSeek() {
+    isSeeking = false;
+    seekNodeId = null;
+    document.removeEventListener('mousemove', onSeek);
+    document.removeEventListener('mouseup', stopSeek);
+}
+
+function seekAudio(event, progressEl, nodeId) {
+    const audio = document.getElementById('audio-' + nodeId);
+    if (!audio) return;
+    
+    const rect = progressEl.getBoundingClientRect();
+    const percent = Math.max(0, Math.min(1, (event.clientX - rect.left) / rect.width));
+    audio.currentTime = percent * audio.duration;
+    
+    const fill = progressEl.querySelector('.audio-progress-fill');
+    if (fill) fill.style.width = (percent * 100) + '%';
+}
+
+let isVolumeDrag = false;
+let volumeNodeId = null;
+let volumeStartX = 0;
+let volumeStartPercent = 0;
+
+function startVolume(event, sliderEl, nodeId) {
+    isVolumeDrag = true;
+    volumeNodeId = nodeId;
+    const rect = sliderEl.getBoundingClientRect();
+    volumeStartX = event.clientX;
+    volumeStartPercent = (event.clientX - rect.left) / rect.width;
+    setVolume(event, sliderEl, nodeId);
+    document.addEventListener('mousemove', onVolumeDrag);
+    document.addEventListener('mouseup', stopVolumeDrag);
+}
+
+function onVolumeDrag(event) {
+    if (!isVolumeDrag || !volumeNodeId) return;
+    const sliderEl = document.querySelector(`.audio-player[data-node-id="${volumeNodeId}"] .audio-volume-slider`);
+    if (sliderEl) {
+        const rect = sliderEl.getBoundingClientRect();
+        const deltaX = event.clientX - volumeStartX;
+        const deltaPercent = deltaX / rect.width;
+        let newPercent = volumeStartPercent + deltaPercent;
+        newPercent = Math.max(0, Math.min(1.5, newPercent));
+        
+        const audio = document.getElementById('audio-' + volumeNodeId);
+        if (audio) {
+            audio.volume = newPercent;
+            audio.dataset.volume = newPercent;
+        }
+        
+        const fill = sliderEl.querySelector('.audio-volume-fill');
+        if (fill) {
+            if (newPercent > 1.0) {
+                fill.style.width = '100%';
+                fill.style.backgroundColor = 'var(--accent)';
+            } else {
+                fill.style.width = (newPercent * 100) + '%';
+                fill.style.backgroundColor = 'var(--accent)';
+            }
+        }
+        
+        const volBtn = sliderEl.parentElement.querySelector('.audio-volume-btn');
+        if (volBtn) volBtn.classList.toggle('muted', newPercent === 0);
+    }
+}
+
+function stopVolumeDrag() {
+    isVolumeDrag = false;
+    volumeNodeId = null;
+    document.removeEventListener('mousemove', onVolumeDrag);
+    document.removeEventListener('mouseup', stopVolumeDrag);
+}
+
+function setVolume(event, sliderEl, nodeId) {
+    const audio = document.getElementById('audio-' + nodeId);
+    if (!audio) return;
+    
+    const rect = sliderEl.getBoundingClientRect();
+    let x = event.clientX - rect.left;
+    let percent;
+    
+    if (x > rect.width) {
+        const extra = x - rect.width;
+        percent = 1.0 + (extra / rect.width) * 0.5;
+    } else {
+        percent = x / rect.width;
+    }
+    percent = Math.max(0, Math.min(1.5, percent));
+    
+    audio.volume = percent;
+    audio.dataset.volume = percent;
+    
+    const fill = sliderEl.querySelector('.audio-volume-fill');
+    if (fill) {
+        if (percent > 1.0) {
+            fill.style.width = '100%';
+            fill.style.backgroundColor = 'var(--accent)';
+        } else {
+            fill.style.width = (percent * 100) + '%';
+            fill.style.backgroundColor = 'var(--accent)';
+        }
+    }
+    
+    const volBtn = sliderEl.parentElement.querySelector('.audio-volume-btn');
+    if (volBtn) volBtn.classList.toggle('muted', percent === 0);
+}
+
+function toggleMute(btn, nodeId) {
+    const audio = document.getElementById('audio-' + nodeId);
+    if (!audio) return;
+    
+    const currentVol = parseFloat(audio.dataset.volume) || 1;
+    if (currentVol > 0) {
+        audio.dataset.prevVolume = currentVol;
+        audio.volume = 0;
+    } else {
+        audio.volume = audio.dataset.prevVolume || 1;
+    }
+    
+    const player = btn.closest('.audio-player');
+    const fill = player.querySelector('.audio-volume-fill');
+    const vol = audio.volume;
+    if (fill) {
+        fill.style.width = Math.min(100, (vol / 1.0) * 100) + '%';
+    }
+    btn.classList.toggle('muted', vol === 0);
+}
+
+function formatTime(seconds) {
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return mins + ':' + (secs < 10 ? '0' : '') + secs;
 }

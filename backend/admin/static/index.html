@@ -23,6 +23,10 @@
             --overlay: #222222;
             --red: #e67378;
             --green: #85ed9b;
+            --grey: #444444;
+            --grey-hover: #555555;
+            --grey-active: #333333;
+            --grey-text: #aaaaaa;
         }
 
         * { box-sizing: border-box; }
@@ -88,22 +92,152 @@
         .gen-btn {
             display: block;
             width: 100%;
-            padding: 6px 12px;
-            background: var(--accent);
-            border: none;
+            padding: 8px 14px;
+            background: var(--grey);
+            border: 1px solid var(--grey);
             border-radius: var(--radius);
-            color: var(--base);
+            color: var(--grey-text);
             font-size: 13px;
             text-align: center;
             cursor: pointer;
-            margin-bottom: 2px;
+            margin-top: 6px;
+            transition: all 0.2s ease;
         }
-        .gen-btn:hover { background: var(--card); color: var(--text); }
-        .gen-btn.active { background: var(--card); color: var(--accent); }
+        .gen-btn:hover { background: var(--grey-hover); border-color: var(--grey-hover); color: var(--text); }
+        .gen-btn:active { background: var(--grey-active); color: var(--grey-text); border-color: var(--grey-active); }
+        .gen-btn.active { background: var(--card); color: var(--accent); border-color: var(--accent); }
+        .gen-btn.loading { background: var(--grey-hover); color: var(--text); }
+        .gen-btn.success { background: var(--green); color: var(--base); border-color: var(--green); }
+        .gen-btn.error { background: var(--red); color: var(--text); border-color: var(--red); }
+        .gen-btn.accent {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: var(--base);
+        }
+        .gen-btn.accent:hover { background: var(--secondary); border-color: var(--secondary); }
         .gen-btn:disabled {
             background-color: #cccccc;
             color: #666666;
-            cursor: not-allowed; /* Changes cursor to a 'prohibited' sign */
+            cursor: not-allowed;
+        }
+
+        .audio-player {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--section);
+            border: 1px solid var(--hidden);
+            border-radius: var(--radius);
+            padding: 6px 10px;
+            max-width: 320px;
+        }
+        .audio-play-btn {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: var(--accent);
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .audio-play-btn:hover { background: #8a7ff5; }
+        .audio-play-btn::after {
+            content: '';
+            border-style: solid;
+            border-width: 5px 0 5px 8px;
+            border-color: transparent transparent transparent var(--base);
+            margin-left: 2px;
+        }
+        .audio-play-btn.playing::after {
+            border-width: 0;
+            border-left: 3px solid var(--base);
+            border-right: 3px solid var(--base);
+            width: 6px;
+            height: 8px;
+            margin-left: 0;
+        }
+        .audio-progress {
+            flex: 1;
+            height: 4px;
+            background: var(--hidden);
+            border-radius: 2px;
+            cursor: pointer;
+            position: relative;
+        }
+        .audio-progress-fill {
+            height: 100%;
+            background: var(--accent);
+            width: 0%;
+            border-radius: 2px;
+            position: relative;
+        }
+        .audio-progress-fill::after {
+            content: '';
+            position: absolute;
+            right: -4px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 10px;
+            height: 10px;
+            background: var(--accent);
+            border-radius: 50%;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        .audio-progress:hover .audio-progress-fill::after {
+            opacity: 1;
+        }
+        .audio-time {
+            font-size: 10px;
+            color: var(--subtext);
+            font-family: 'JetBrains Mono', monospace;
+            min-width: 35px;
+        }
+        .audio-volume {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .audio-volume-btn {
+            width: 18px;
+            height: 18px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .audio-volume-btn::after {
+            content: '';
+            border-style: solid;
+            border-width: 4px 5px 4px 0;
+            border-color: transparent var(--text) transparent transparent;
+        }
+        .audio-volume-btn.muted::after {
+            border-width: 0 0 0 0;
+            width: 4px;
+            height: 8px;
+            background: var(--text);
+            box-shadow: -4px 0 0 var(--text);
+        }
+        .audio-volume-slider {
+            width: 50px;
+            height: 4px;
+            background: var(--hidden);
+            border-radius: 2px;
+            cursor: pointer;
+            position: relative;
+            overflow: visible;
+        }
+        .audio-volume-fill {
+            height: 100%;
+            background: var(--accent);
+            width: 100%;
+            border-radius: 2px;
         }
 
         .card { background: var(--card); border: 1px solid var(--hidden); border-radius: var(--radius); padding: 12px; margin-bottom: 12px; }
