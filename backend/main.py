@@ -25,8 +25,8 @@ class App:
         self.dialogue_manager = Dialogue_Manager(self.mode)
         self.vendor_manager = Vendor_Manager(self.mode)
         self.challenge_manager = Challenge_Manager(self.mode)
-        self.hokTTS = HokTTS(self.mode)
-        self.hokTranslation = HokTranslation(self.mode)
+        self.hokTTS = HokTTS()
+        self.hokTranslation = HokTranslation()
             
         self.app = Flask(import_name="Hokkien Game")
 
