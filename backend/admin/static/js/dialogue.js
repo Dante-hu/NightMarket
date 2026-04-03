@@ -83,6 +83,15 @@ function renderNode(node, depth) {
     const audioBinary = dialogue.audio_src?.audio_binary;
     const hasAudio = audioBinary && audioBinary.length > 0;
     const audioSrc = hasAudio ? `data:audio/wav;base64,${audioBinary}` : '';
+    
+    function esc(str) {
+        if (!str) return '';
+        return String(str).replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/"/g, '\\"').replace(/\n/g, '\\n');
+    }
+    
+    const dialogueText = esc(dialogue.dialogue);
+    const translationText = esc(dialogue.translation);
+    const nodeId = esc(node.node_id);
 
     return `
         <div style="margin-left: ${margin}px;">
@@ -106,7 +115,7 @@ function renderNode(node, depth) {
                     <div style="margin-bottom: 8px;">
                         <label style="display: block; font-size: 10px; color: var(--subtext); margin-bottom: 4px;">Translation</label>
                         <input id="translation-${node.node_id}" class="input" value="${dialogue.translation || ''}" oninput="autoSave('${node.node_id}')" placeholder="Enter translation...">
-                        <button onclick="generateTranslations('${dialogue.dialogue || ""}','${node.node_id}')" class="gen-btn">Generate Translations</button>
+                        <button onclick="generateTranslations('${dialogueText}','${nodeId}')" class="gen-btn">Generate Translations</button>
                     </div>
                     <div style="margin-bottom: 8px;">
                         <label style="display: block; font-size: 10px; color: var(--subtext); margin-bottom: 4px;">Audio</label>
@@ -131,7 +140,7 @@ function renderNode(node, depth) {
                         ` : `
                         <span class="subtext" style="font-size: 10px; display: block; margin-bottom: 6px;">No audio generated</span>
                         `}
-                        <button onclick="generateTTS('${dialogue.translation || ''}','${node.node_id}')" class="gen-btn">Generate Audio</button>
+                        <button onclick="generateTTS('${translationText}','${nodeId}')" class="gen-btn">Generate Audio</button>
                     </div>
                     <div style="margin-bottom: 4px;">
                         <button onclick="addOption('${node.node_id}')" class="link">+ Add Option</button>
