@@ -26,8 +26,10 @@ class HokTranslation:
         return pipeline
 
     def translate(self, source_sentence:str, target_language:str) -> str:
+        print(f"[TRANSLATE] Input: '{source_sentence}' -> target: {target_language}")
         prompt = PROMPT_TEMPLATE.format(source_sentence=source_sentence, target_language=target_language)
-        out = self.pipe(prompt, return_full_text=False, repetition_penalty=1.1, do_sample=False)[0]['generated_text']
+        print(f"[TRANSLATE] Prompt: {repr(prompt)}")
+        out = self.pipe(prompt, return_full_text=False, max_new_tokens=1024)[0]['generated_text']
         print(f"[TRANSLATE] Raw: {out}")
         text = out[:out.rfind("[ /")].strip()
         text = re.sub(r'\s*\[.*?[A-Z]+.*?\]', '', text).strip()
