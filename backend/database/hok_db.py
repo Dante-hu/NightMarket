@@ -1,5 +1,6 @@
 from .sql_db import SQL_DB
 import os
+import psycopg2
 
 class Hok_DB:
     def __init__(self, mode=1):
@@ -9,11 +10,20 @@ class Hok_DB:
         self.db = None
             
     def connect(self):
+        #Check if we have a deployment URL (Production/Render)
+        db_url = os.environ.get("DATABASE_URL")
+        
+        if db_url:
+            print("Connecting to Supabase PostgreSQL...")
+            # We tell SQL_DB to use the URL instead of a local path
+            return SQL_DB(db_url=db_url)
+            
+        # 2. Fallback to SQLite (Local Development)
         self.db_name = self.get_name(self.mode)
         self.base_dir = os.path.dirname(os.path.abspath(__file__)) + "/"
 
         if not os.path.isfile(self.base_dir + self.db_name + ".db"): 
-            raise Exception("Database file not found.")
+            raise Exception(f"Database file {self.db_name}.db not found locally.")
             
         print("Connecting file: " + self.base_dir + self.db_name + ".db")
         return SQL_DB(path=self.base_dir, db_name=self.db_name)
