@@ -189,168 +189,168 @@ def populate_dialogues(cursor):
         ("n_l2_v1_greet", "d_l2_v1_001",
          "Hello!",
          "老板好！",
-         "", "npc_pepper_bun"),
+         "", "", "npc_pepper_bun"),
 
         ("n_l2_v1_howmuch", "d_l2_v1_002",
          "How much is this?",
          "这个多少钱？",
-         "", "npc_pepper_bun"),
+         "", "", "npc_pepper_bun"),
 
         ("n_l2_v1_price", "d_l2_v1_003",
          "$6 for one.",
          "六块一个。",
-         "", "npc_pepper_bun"),
+         "", "", "npc_pepper_bun"),
 
         ("n_l2_v1_order", "d_l2_v1_004",
          "I will take two then, thank you.",
          "来两个吧，谢谢。",
-         "", "npc_pepper_bun"),
+         "", "", "npc_pepper_bun"),
 
         ("n_l2_v1_complete", "d_l2_v1_005",
          "Here you go! Thank you for your support!",
          "来！谢谢惠顾！",
-         "", "npc_pepper_bun"),
+         "", "", "npc_pepper_bun"),
 
         # ── Path 2: 鸡翅包饭 — Percentage discount ───────────────────
 
         ("n_l2_v2_greet", "d_l2_v2_001",
          "Hello!",
          "老板好！",
-         "", "npc_chicken_wing"),
+         "", "", "npc_chicken_wing"),
 
         ("n_l2_v2_howmuch", "d_l2_v2_002",
          "How much is this?",
          "这个多少钱？",
-         "", "npc_chicken_wing"),
+         "", "", "npc_chicken_wing"),
 
         ("n_l2_v2_original", "d_l2_v2_003",
          "Original price is $7 each.",
          "原价七块一个。",
-         "", "npc_chicken_wing"),
+         "", "", "npc_chicken_wing"),
 
         ("n_l2_v2_discount", "d_l2_v2_004",
          "But if you buy a box of six, there is a 30% discount!",
          "但是买一盒六个打七折！",
-         "", "npc_chicken_wing"),
+         "", "", "npc_chicken_wing"),
 
         ("n_l2_v2_order", "d_l2_v2_005",
          "Great! I will take a box of six please.",
          "好！我要一盒六个。",
-         "", "npc_chicken_wing"),
+         "", "", "npc_chicken_wing"),
 
         ("n_l2_v2_complete", "d_l2_v2_006",
          "Here you go! May your business prosper!",
          "来！生意兴隆！",
-         "", "npc_chicken_wing"),
+         "", "", "npc_chicken_wing"),
 
         # ── Path 3: 新竹贡丸 — BOGO ──────────────────────────────────
 
         ("n_l2_v3_greet", "d_l2_v3_001",
          "Would you like to try some? We have a deal today!",
          "要试吃吗？今天有做活动！",
-         "", "npc_pork_ball"),
+         "", "", "npc_pork_ball"),
 
         ("n_l2_v3_bogo", "d_l2_v3_002",
          "We have a buy one get one free deal today!",
          "今天买一送一！",
-         "", "npc_pork_ball"),
+         "", "", "npc_pork_ball"),
 
         ("n_l2_v3_try", "d_l2_v3_003",
          "Yes, I will try some!",
          "好，我试一点！",
-         "", "npc_pork_ball"),
+         "", "", "npc_pork_ball"),
 
         ("n_l2_v3_like", "d_l2_v3_004",
          "It's delicious!",
          "好好吃呀！",
-         "", "npc_pork_ball"),
+         "", "", "npc_pork_ball"),
 
         ("n_l2_v3_order", "d_l2_v3_005",
          "I will take one then!",
          "那我要一个！",
-         "", "npc_pork_ball"),
+         "", "", "npc_pork_ball"),
 
         ("n_l2_v3_complete", "d_l2_v3_006",
          "Here you go — and here is your free one too!",
          "来！这是你的，买一送一！",
-         "", "npc_pork_ball"),
+         "", "", "npc_pork_ball"),
 
         # ── Path 4: 筒仔米糕 — Bargaining rejected ───────────────────
 
         ("n_l2_v4_greet", "d_l2_v4_001",
          "Hello!",
          "老板好！",
-         "", "npc_tube_pudding"),
+         "", "", "npc_tube_pudding"),
 
         ("n_l2_v4_howmuch", "d_l2_v4_002",
          "How much is this?",
          "这个多少钱？",
-         "", "npc_tube_pudding"),
+         "", "", "npc_tube_pudding"),
 
         ("n_l2_v4_price", "d_l2_v4_003",
          "$8 for one.",
          "八块一个。",
-         "", "npc_tube_pudding"),
+         "", "", "npc_tube_pudding"),
 
         ("n_l2_v4_bargain", "d_l2_v4_004",
          "Can it be a little cheaper?",
          "可以便宜点吗？",
-         "", "npc_tube_pudding"),
+         "", "", "npc_tube_pudding"),
 
         ("n_l2_v4_reject", "d_l2_v4_005",
          "Sorry, cannot. This is already the best price!",
          "不行，这已经是最便宜的价格了！",
-         "", "npc_tube_pudding"),
+         "", "", "npc_tube_pudding"),
 
         ("n_l2_v4_order", "d_l2_v4_006",
          "Okay, no worries. I will take one.",
          "没关系，我要一个。",
-         "", "npc_tube_pudding"),
+         "", "", "npc_tube_pudding"),
 
         ("n_l2_v4_complete", "d_l2_v4_007",
          "Here you go! Thank you!",
          "来！谢谢！",
-         "", "npc_tube_pudding"),
+         "", "", "npc_tube_pudding"),
 
         # ── Path 5: 芋粿巧 — Bargaining accepted ─────────────────────
 
         ("n_l2_v5_greet", "d_l2_v5_001",
          "Hello!",
          "老板好！",
-         "", "npc_taro_cake"),
+         "", "", "npc_taro_cake"),
 
         ("n_l2_v5_howmuch", "d_l2_v5_002",
          "How much is this?",
          "这个多少钱？",
-         "", "npc_taro_cake"),
+         "", "", "npc_taro_cake"),
 
         ("n_l2_v5_price", "d_l2_v5_003",
          "$6 for one.",
          "六块一个。",
-         "", "npc_taro_cake"),
+         "", "", "npc_taro_cake"),
 
         ("n_l2_v5_bargain", "d_l2_v5_004",
          "Can it be a little cheaper?",
          "可以便宜点吗？",
-         "", "npc_taro_cake"),
+         "", "", "npc_taro_cake"),
 
         ("n_l2_v5_accept", "d_l2_v5_005",
          "Okay fine! $5 for you. You have a good eye!",
          "好吧！给你五块。你很会买东西！",
-         "", "npc_taro_cake"),
+         "", "", "npc_taro_cake"),
 
         ("n_l2_v5_order", "d_l2_v5_006",
          "Thank you so much!",
          "谢谢你！",
-         "", "npc_taro_cake"),
+         "", "", "npc_taro_cake"),
 
         ("n_l2_v5_complete", "d_l2_v5_007",
          "Here you go! Come back again!",
          "来！欢迎再来！",
-         "", "npc_taro_cake"),
+         "", "", "npc_taro_cake"),
     ]
     cursor.executemany(
-        "INSERT OR IGNORE INTO dialogues VALUES (?,?,?,?,?,?)", dialogues)
+        "INSERT OR IGNORE INTO dialogues VALUES (?,?,?,?,?,?,?)", dialogues)
     print(f"   Inserted {len(dialogues)} dialogue lines")
 
 
@@ -556,7 +556,7 @@ def verify(cursor):
 
     print("\n── Sample: Path 4 Bargaining Rejected ──────────────────────")
     rows = cursor.execute("""
-        SELECT node_id, dialogue, translation
+        SELECT node_id, dialogue, translation_HAN
         FROM dialogues
         WHERE node_id LIKE 'n_l2_v4%'
         ORDER BY dialogue_id

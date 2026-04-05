@@ -103,8 +103,13 @@ function renderNode(node, depth) {
                     </div>
                     <div style="margin-bottom: 8px;">
                         <label style="display: block; font-size: 10px; color: var(--subtext); margin-bottom: 4px;">Translation</label>
-                        <input id="translation-${node.node_id}" class="input" value="${dialogue.translation || ''}" oninput="autoSave('${node.node_id}')" placeholder="Enter translation...">
-                        <button onclick="generateTranslations('${dialogue.dialogue || ""}','${node.node_id}')" class="gen-btn">Generate Translations</button>
+                        <input id="translation-${node.node_id}-HAN" class="input" value="${dialogue.translation_HAN || ''}" oninput="autoSave('${node.node_id}')" placeholder="Enter HAN translation...">
+                        <button onclick="generateTranslations('${dialogue.dialogue || ""}','${node.node_id}','HAN')" class="gen-btn">Generate Translations</button>
+                    </div>
+                    <div style="margin-bottom: 8px;">
+                        <label style="display: block; font-size: 10px; color: var(--subtext); margin-bottom: 4px;">Translation</label>
+                        <input id="translation-${node.node_id}-POJ" class="input" value="${dialogue.translation_POJ || ''}" oninput="autoSave('${node.node_id}')" placeholder="Enter POJ translation...">
+                        <button onclick="generateTranslations('${dialogue.dialogue || ""}','${node.node_id}','POJ')" class="gen-btn">Generate Translations</button>
                     </div>
                     <div style="margin-bottom: 8px;">
                         <label style="display: block; font-size: 10px; color: var(--subtext); margin-bottom: 4px;">Translation</label>
@@ -116,7 +121,7 @@ function renderNode(node, depth) {
                             </audio>
                             <p>Audio Source: ${dialogue.audio_src.audio_path || "No source"}</p>
                         </div>
-                        <button onclick="generateTTS('${dialogue.translation || ''}','${node.node_id}')" class="gen-btn">Generate Audio</button>
+                        <button onclick="generateTTS('${dialogue.translation_POJ || ''}','${node.node_id}')" class="gen-btn">Generate Audio</button>
                     </div>
                     <span id="save-status-${node.node_id}" class="subtext" style="font-size: 10px;"></span>
                     <div style="margin-bottom: 4px;">
@@ -227,9 +232,11 @@ async function autoSave(nodeId) {
     if (saveTimeouts[nodeId]) clearTimeout(saveTimeouts[nodeId]);
     saveTimeouts[nodeId] = setTimeout(async () => {
         const dialogue = document.getElementById('dialogue-' + nodeId).value;
-        const translation = document.getElementById('translation-' + nodeId).value;
+        const translationHAN = document.getElementById('translation-' + nodeId + '-HAN').value;
+        const translationPOJ = document.getElementById('translation-' + nodeId + '-POJ').value;
+
         try {
-            await API.dialogue.updateDialogue(nodeId, { dialogue, translation });
+            await API.dialogue.updateDialogue(nodeId, { dialogue, translationHAN, translationPOJ });
             statusEl.textContent = 'Saved';
             setTimeout(() => statusEl.textContent = '', 2000);
         } catch (e) {
@@ -287,7 +294,7 @@ async function deleteOption(optionId, nodeId) {
     loadDialogueTree();
 }
 
-async function generateTranslations(dialougeText, nodeId){
+async function generateTranslations(dialougeText, nodeId, targetLang){
     const statusEl = document.getElementById('save-status-' + nodeId);
     const buttonEl = document.querySelectorAll(".gen-btn");
     if (dialougeText == "") { return }
@@ -295,7 +302,7 @@ async function generateTranslations(dialougeText, nodeId){
         statusEl.textContent = 'Generating translations';
         setTimeout(() => statusEl.textContent = '', 2000);
         buttonEl.forEach(btn => { btn.disabled = true });
-        await API.model.translate(nodeId, { output_lang: "POJ", input_text: dialougeText });
+        await API.model.translate(nodeId, { output_lang: targetLang, input_text: dialougeText });
     } catch (e) {
         console.log(e) 
         statusEl.textContent = 'Error generating translations';

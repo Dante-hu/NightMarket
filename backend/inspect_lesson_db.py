@@ -185,7 +185,7 @@ def show_dialogue_flow(cursor, lesson=None, vendor_id=None):
             node_id, parent_id = node
 
             dialogue = cursor.execute("""
-                SELECT dialogue_id, dialogue, translation
+                SELECT dialogue_id, dialogue, translation_HAN
                 FROM dialogues WHERE node_id = ?
             """, (node_id,)).fetchone()
 

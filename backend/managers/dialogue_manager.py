@@ -45,9 +45,10 @@ class Dialogue_Manager(Hok_DB):
             "dialogue": {
                 "dialogue_id": dialogue[1],
                 "text": dialogue[2],
-                "translation": dialogue[3],
-                "audio": dialogue[4],
-                "npc_id": dialogue[5],
+                "translation_HAN": dialogue[3],
+                "translation_POJ": dialogue[4],
+                "audio": dialogue[5],
+                "npc_id": dialogue[6],
                 "key_words": key_words_data
             },
             "options": options_data,
@@ -137,8 +138,8 @@ class Dialogue_Manager(Hok_DB):
         self.db.insert("dialogues", [{"node_id": node_id, "dialogue_id": dialogue_id, "dialogue": dialogue_text, "translation": translation, "audio_clip": "", "npc_id": npc_id}])
         return {"node_id": node_id, "dialogue_id": dialogue_id, "dialogue": dialogue_text}
 
-    def update_dialogue(self, node_id, dialogue_text, translation, audio_path):
-        self.db.update("dialogues", {"dialogue": dialogue_text, "translation": translation, "audio_clip": audio_path}, "node_id = ?", (node_id,))
+    def update_dialogue(self, node_id, dialogue_text, translation_HAN, translation_POJ, audio_path):
+        self.db.update("dialogues", {"dialogue": dialogue_text, "translation_HAN": translation_HAN, "translation_POJ": translation_POJ, "audio_clip": audio_path}, "node_id = ?", (node_id,))
         return {"node_id": node_id, "dialogue": dialogue_text}
 
     def get_options_for_node(self, node_id):

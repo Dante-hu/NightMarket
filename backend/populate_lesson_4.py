@@ -188,195 +188,195 @@ def populate_dialogues(cursor):
     dialogues = [
         # Path 1: 奶茶 Bubble Tea
         ("n_l4_v1_greet",       "d_l4_v1_001",
-         "Hello!", "老板好！", "", "npc_bubble_tea"),
+         "Hello!", "老板好！", "", "", "npc_bubble_tea"),
 
         ("n_l4_v1_menu",        "d_l4_v1_002",
          "Welcome! What would you like?",
-         "欢迎！你要什么？", "", "npc_bubble_tea"),
+         "欢迎！你要什么？", "", "", "npc_bubble_tea"),
 
         ("n_l4_v1_size_ask",    "d_l4_v1_003",
          "I would like a bubble tea please. What sizes do you have?",
-         "我要一杯珍珠奶茶。请问有什么size？", "", "npc_bubble_tea"),
+         "我要一杯珍珠奶茶。请问有什么size？", "", "", "npc_bubble_tea"),
 
         ("n_l4_v1_large",       "d_l4_v1_004",
          "Large please!",
-         "大杯！", "", "npc_bubble_tea"),
+         "大杯！", "", "", "npc_bubble_tea"),
 
         ("n_l4_v1_medium",      "d_l4_v1_005",
          "Medium please!",
-         "中杯！", "", "npc_bubble_tea"),
+         "中杯！", "", "", "npc_bubble_tea"),
 
         ("n_l4_v1_small",       "d_l4_v1_006",
          "Small please!",
-         "小杯！", "", "npc_bubble_tea"),
+         "小杯！", "", "", "npc_bubble_tea"),
 
         ("n_l4_v1_sugar_ask",   "d_l4_v1_007",
          "What sugar level would you like?",
-         "你要几分糖？", "", "npc_bubble_tea"),
+         "你要几分糖？", "", "", "npc_bubble_tea"),
 
         ("n_l4_v1_no_sugar",    "d_l4_v1_008",
          "No sugar please!",
-         "无糖！", "", "npc_bubble_tea"),
+         "无糖！", "", "", "npc_bubble_tea"),
 
         ("n_l4_v1_30_sugar",    "d_l4_v1_009",
          "30% sugar please!",
-         "三分糖！", "", "npc_bubble_tea"),
+         "三分糖！", "", "", "npc_bubble_tea"),
 
         ("n_l4_v1_50_sugar",    "d_l4_v1_010",
          "Half sugar please!",
-         "半糖！", "", "npc_bubble_tea"),
+         "半糖！", "", "", "npc_bubble_tea"),
 
         ("n_l4_v1_70_sugar",    "d_l4_v1_011",
          "70% sugar please!",
-         "七分糖！", "", "npc_bubble_tea"),
+         "七分糖！", "", "", "npc_bubble_tea"),
 
         ("n_l4_v1_100_sugar",   "d_l4_v1_012",
          "Full sugar please!",
-         "全糖！", "", "npc_bubble_tea"),
+         "全糖！", "", "", "npc_bubble_tea"),
 
         ("n_l4_v1_ice_ask",     "d_l4_v1_013",
          "What ice level would you like?",
-         "你要几分冰？", "", "npc_bubble_tea"),
+         "你要几分冰？", "", "", "npc_bubble_tea"),
 
         ("n_l4_v1_no_ice",      "d_l4_v1_014",
          "No ice please!",
-         "去冰！", "", "npc_bubble_tea"),
+         "去冰！", "", "", "npc_bubble_tea"),
 
         ("n_l4_v1_less_ice",    "d_l4_v1_015",
          "Less ice please!",
-         "少冰！", "", "npc_bubble_tea"),
+         "少冰！", "", "", "npc_bubble_tea"),
 
         ("n_l4_v1_normal_ice",  "d_l4_v1_016",
          "Normal ice please!",
-         "正常冰！", "", "npc_bubble_tea"),
+         "正常冰！", "", "", "npc_bubble_tea"),
 
         ("n_l4_v1_extra_ice",   "d_l4_v1_017",
          "Extra ice please!",
-         "多冰！", "", "npc_bubble_tea"),
+         "多冰！", "", "", "npc_bubble_tea"),
 
         ("n_l4_v1_topping_ask", "d_l4_v1_018",
          "Which topping would you like?",
-         "你要加什么料？", "", "npc_bubble_tea"),
+         "你要加什么料？", "", "", "npc_bubble_tea"),
 
         ("n_l4_v1_pearl",       "d_l4_v1_019",
          "Tapioca pearls please!",
-         "加珍珠！", "", "npc_bubble_tea"),
+         "加珍珠！", "", "", "npc_bubble_tea"),
 
         ("n_l4_v1_coconut",     "d_l4_v1_020",
          "Coconut jelly please!",
-         "加椰果！", "", "npc_bubble_tea"),
+         "加椰果！", "", "", "npc_bubble_tea"),
 
         ("n_l4_v1_red_bean",    "d_l4_v1_021",
          "Red bean please!",
-         "加红豆！", "", "npc_bubble_tea"),
+         "加红豆！", "", "", "npc_bubble_tea"),
 
         ("n_l4_v1_no_topping",  "d_l4_v1_022",
          "No toppings please!",
-         "不要加料！", "", "npc_bubble_tea"),
+         "不要加料！", "", "", "npc_bubble_tea"),
 
         ("n_l4_v1_complete",    "d_l4_v1_023",
          "Coming right up! Here is your bubble tea!",
-         "好的！你的珍珠奶茶来了！", "", "npc_bubble_tea"),
+         "好的！你的珍珠奶茶来了！", "", "", "npc_bubble_tea"),
 
         # Path 2: 豆花 Tofu
         ("n_l4_v2_greet",       "d_l4_v2_001",
-         "Hello!", "老板好！", "", "npc_tofu"),
+         "Hello!", "老板好！", "", "", "npc_tofu"),
 
         ("n_l4_v2_explain",     "d_l4_v2_002",
          "Welcome! Our tofu pudding is very smooth today! "
          "Which topping would you like?",
          "欢迎！我们今天的豆花很嫩！你要加什么料？",
-         "", "npc_tofu"),
+         "", "", "npc_tofu"),
 
         ("n_l4_v2_topping_ask", "d_l4_v2_003",
          "We have red bean, taro, peanut, and grass jelly!",
          "我们有红豆、芋头、花生还有仙草！",
-         "", "npc_tofu"),
+         "", "", "npc_tofu"),
 
         ("n_l4_v2_red_bean",    "d_l4_v2_004",
          "Red bean please! And add more syrup!",
-         "加红豆！然后多放一点糖水！", "", "npc_tofu"),
+         "加红豆！然后多放一点糖水！", "", "", "npc_tofu"),
 
         ("n_l4_v2_taro",        "d_l4_v2_005",
          "Taro please! And less syrup!",
-         "加芋头！然后少放点糖水！", "", "npc_tofu"),
+         "加芋头！然后少放点糖水！", "", "", "npc_tofu"),
 
         ("n_l4_v2_peanut",      "d_l4_v2_006",
          "Peanut please!",
-         "加花生！", "", "npc_tofu"),
+         "加花生！", "", "", "npc_tofu"),
 
         ("n_l4_v2_grass_jelly", "d_l4_v2_007",
          "Grass jelly please!",
-         "加仙草！", "", "npc_tofu"),
+         "加仙草！", "", "", "npc_tofu"),
 
         ("n_l4_v2_adjust_ask",  "d_l4_v2_008",
          "Would you like more or less syrup?",
-         "糖水要多一点还是少一点？", "", "npc_tofu"),
+         "糖水要多一点还是少一点？", "", "", "npc_tofu"),
 
         ("n_l4_v2_more_syrup",  "d_l4_v2_009",
          "More syrup please!",
-         "多放一点！", "", "npc_tofu"),
+         "多放一点！", "", "", "npc_tofu"),
 
         ("n_l4_v2_less_syrup",  "d_l4_v2_010",
          "Less syrup please!",
-         "少放点！", "", "npc_tofu"),
+         "少放点！", "", "", "npc_tofu"),
 
         ("n_l4_v2_fine",        "d_l4_v2_011",
          "It is perfect as it is, thank you!",
-         "这样就好了，谢谢！", "", "npc_tofu"),
+         "这样就好了，谢谢！", "", "", "npc_tofu"),
 
         ("n_l4_v2_complete",    "d_l4_v2_012",
          "Here you go! Enjoy your tofu pudding!",
-         "来！请慢用！", "", "npc_tofu"),
+         "来！请慢用！", "", "", "npc_tofu"),
 
         # Path 3: 剉冰 Shaved Ice
         ("n_l4_v3_greet",       "d_l4_v3_001",
-         "Hello!", "老板好！", "", "npc_shaved_ice"),
+         "Hello!", "老板好！", "", "", "npc_shaved_ice"),
 
         ("n_l4_v3_explain",     "d_l4_v3_002",
          "Welcome! Our shaved ice is very refreshing! "
          "What toppings would you like?",
          "欢迎！我们的剉冰很消暑！你要加什么料？",
-         "", "npc_shaved_ice"),
+         "", "", "npc_shaved_ice"),
 
         ("n_l4_v3_topping_ask", "d_l4_v3_003",
          "We have taro balls, red bean, and mung bean!",
          "我们有芋圆、红豆还有绿豆！",
-         "", "npc_shaved_ice"),
+         "", "", "npc_shaved_ice"),
 
         ("n_l4_v3_taro_ball",   "d_l4_v3_004",
          "Taro balls please!",
-         "加芋圆！", "", "npc_shaved_ice"),
+         "加芋圆！", "", "", "npc_shaved_ice"),
 
         ("n_l4_v3_red_bean",    "d_l4_v3_005",
          "Red bean please!",
-         "加红豆！", "", "npc_shaved_ice"),
+         "加红豆！", "", "", "npc_shaved_ice"),
 
         ("n_l4_v3_mung_bean",   "d_l4_v3_006",
          "Mung bean please!",
-         "加绿豆！", "", "npc_shaved_ice"),
+         "加绿豆！", "", "", "npc_shaved_ice"),
 
         ("n_l4_v3_syrup_ask",   "d_l4_v3_007",
          "How much syrup would you like?",
-         "你要加多少糖水？", "", "npc_shaved_ice"),
+         "你要加多少糖水？", "", "", "npc_shaved_ice"),
 
         ("n_l4_v3_no_sugar",    "d_l4_v3_008",
          "No syrup please!",
-         "不要糖水！", "", "npc_shaved_ice"),
+         "不要糖水！", "", "", "npc_shaved_ice"),
 
         ("n_l4_v3_half_sugar",  "d_l4_v3_009",
          "Half syrup please!",
-         "半糖！", "", "npc_shaved_ice"),
+         "半糖！", "", "", "npc_shaved_ice"),
 
         ("n_l4_v3_full_sugar",  "d_l4_v3_010",
          "Full syrup please!",
-         "全糖！", "", "npc_shaved_ice"),
+         "全糖！", "", "", "npc_shaved_ice"),
 
         ("n_l4_v3_complete",    "d_l4_v3_011",
          "Here you go! Stay cool!",
-         "来！消暑一下！", "", "npc_shaved_ice"),
+         "来！消暑一下！", "", "", "npc_shaved_ice"),
     ]
-    cursor.executemany("INSERT OR IGNORE INTO dialogues VALUES (?,?,?,?,?,?)", dialogues)
+    cursor.executemany("INSERT OR IGNORE INTO dialogues VALUES (?,?,?,?,?,?,?)", dialogues)
     print(f"  Inserted {len(dialogues)} dialogue lines")
 
 

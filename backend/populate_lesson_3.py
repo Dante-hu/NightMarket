@@ -143,56 +143,56 @@ def populate_dialogue_nodes(cursor):
 def populate_dialogues(cursor):
     dialogues = [
         # Path 1: 担仔面 — Asks, does not buy
-        ("n_l3_v3_greet",         "d_l3_v3_001", "Hello!", "老板好！", "", "npc_danzai_noodles"),
-        ("n_l3_v3_whatis",        "d_l3_v3_002", "Excuse me, what is this dish?", "请问这是什么？", "", "npc_danzai_noodles"),
-        ("n_l3_v3_explain",       "d_l3_v3_003", "This is danzai noodles! Thin noodles in a rich shrimp broth.", "这是担仔面！细面条配上鲜美的虾汤。", "", "npc_danzai_noodles"),
-        ("n_l3_v3_inside",        "d_l3_v3_004", "What is inside?", "里面有什么？", "", "npc_danzai_noodles"),
-        ("n_l3_v3_vendor_inside", "d_l3_v3_005", "Inside there is minced pork, shrimp, and a boiled egg!", "里面有肉燥、虾子还有卤蛋！", "", "npc_danzai_noodles"),
-        ("n_l3_v3_decline",       "d_l3_v3_006", "It sounds delicious, but I am too full. No thank you!", "听起来很好吃，但是我吃太饱了。不用了，谢谢！", "", "npc_danzai_noodles"),
-        ("n_l3_v3_end",           "d_l3_v3_007", "No problem! Come back next time!", "没关系！下次再来！", "", "npc_danzai_noodles"),
+        ("n_l3_v3_greet",         "d_l3_v3_001", "Hello!", "老板好！", "", "", "npc_danzai_noodles"),
+        ("n_l3_v3_whatis",        "d_l3_v3_002", "Excuse me, what is this dish?", "请问这是什么？", "", "", "npc_danzai_noodles"),
+        ("n_l3_v3_explain",       "d_l3_v3_003", "This is danzai noodles! Thin noodles in a rich shrimp broth.", "这是担仔面！细面条配上鲜美的虾汤。", "", "", "npc_danzai_noodles"),
+        ("n_l3_v3_inside",        "d_l3_v3_004", "What is inside?", "里面有什么？", "", "", "npc_danzai_noodles"),
+        ("n_l3_v3_vendor_inside", "d_l3_v3_005", "Inside there is minced pork, shrimp, and a boiled egg!", "里面有肉燥、虾子还有卤蛋！", "", "", "npc_danzai_noodles"),
+        ("n_l3_v3_decline",       "d_l3_v3_006", "It sounds delicious, but I am too full. No thank you!", "听起来很好吃，但是我吃太饱了。不用了，谢谢！", "", "", "npc_danzai_noodles"),
+        ("n_l3_v3_end",           "d_l3_v3_007", "No problem! Come back next time!", "没关系！下次再来！", "", "", "npc_danzai_noodles"),
 
         # Path 2: 肉圆 — Buys + unique prep
-        ("n_l3_v2_greet",         "d_l3_v2_001", "Hello!", "老板好！", "", "npc_bahwan"),
-        ("n_l3_v2_whatis",        "d_l3_v2_002", "Excuse me, what is this dish?", "请问这是什么？", "", "npc_bahwan"),
-        ("n_l3_v2_explain",       "d_l3_v2_003", "This is Bahwan! A traditional Taiwanese dumpling.", "这是肉圆！台湾传统小吃。", "", "npc_bahwan"),
-        ("n_l3_v2_inside",        "d_l3_v2_004", "What is inside?", "里面有什么？", "", "npc_bahwan"),
-        ("n_l3_v2_vendor_inside", "d_l3_v2_005", "Inside there is pork and bamboo shoots! The skin is made from sweet potato starch and rice flour.", "里面有猪肉和竹笋！外皮是用地瓜粉和在来米粉做的。", "", "npc_bahwan"),
-        ("n_l3_v2_order",         "d_l3_v2_006", "That sounds amazing! I will take one.", "听起来很特别！我要一个。", "", "npc_bahwan"),
-        ("n_l3_v2_prep_note",     "d_l3_v2_007", "Watch closely — we steam it first, then fry it until golden!", "你看！先蒸过再炸到金黄色！", "", "npc_bahwan"),
-        ("n_l3_v2_complete",      "d_l3_v2_008", "Here you go! Enjoy your Bahwan!", "来！请慢用！", "", "npc_bahwan"),
+        ("n_l3_v2_greet",         "d_l3_v2_001", "Hello!", "老板好！", "", "", "npc_bahwan"),
+        ("n_l3_v2_whatis",        "d_l3_v2_002", "Excuse me, what is this dish?", "请问这是什么？", "", "", "npc_bahwan"),
+        ("n_l3_v2_explain",       "d_l3_v2_003", "This is Bahwan! A traditional Taiwanese dumpling.", "这是肉圆！台湾传统小吃。", "", "", "npc_bahwan"),
+        ("n_l3_v2_inside",        "d_l3_v2_004", "What is inside?", "里面有什么？", "", "", "npc_bahwan"),
+        ("n_l3_v2_vendor_inside", "d_l3_v2_005", "Inside there is pork and bamboo shoots! The skin is made from sweet potato starch and rice flour.", "里面有猪肉和竹笋！外皮是用地瓜粉和在来米粉做的。", "", "", "npc_bahwan"),
+        ("n_l3_v2_order",         "d_l3_v2_006", "That sounds amazing! I will take one.", "听起来很特别！我要一个。", "", "", "npc_bahwan"),
+        ("n_l3_v2_prep_note",     "d_l3_v2_007", "Watch closely — we steam it first, then fry it until golden!", "你看！先蒸过再炸到金黄色！", "", "", "npc_bahwan"),
+        ("n_l3_v2_complete",      "d_l3_v2_008", "Here you go! Enjoy your Bahwan!", "来！请慢用！", "", "", "npc_bahwan"),
 
         # Path 3: 牛肉面 — Contains allergen, does not buy
-        ("n_l3_v5_greet",         "d_l3_v5_001", "Hello!", "老板好！", "", "npc_beef_noodle"),
-        ("n_l3_v5_whatis",        "d_l3_v5_002", "Excuse me, what is this dish?", "请问这是什么？", "", "npc_beef_noodle"),
-        ("n_l3_v5_explain",       "d_l3_v5_003", "This is Taiwan beef noodle soup! Our broth is simmered for 12 hours.", "这是台湾牛肉面！我们的汤头熬了十二个小时。", "", "npc_beef_noodle"),
-        ("n_l3_v5_allergen_ask",  "d_l3_v5_004", "Does this contain beef? I am allergic to beef.", "这个里面有牛肉吗？我对牛肉过敏。", "", "npc_beef_noodle"),
-        ("n_l3_v5_has_allergen",  "d_l3_v5_005", "Yes, it does contain beef. I am sorry!", "对，里面有牛肉。不好意思！", "", "npc_beef_noodle"),
-        ("n_l3_v5_decline",       "d_l3_v5_006", "No problem. No thank you then!", "没关系。不用了，谢谢！", "", "npc_beef_noodle"),
-        ("n_l3_v5_end",           "d_l3_v5_007", "Sorry about that! Come back for something else!", "不好意思！欢迎下次再来！", "", "npc_beef_noodle"),
+        ("n_l3_v5_greet",         "d_l3_v5_001", "Hello!", "老板好！", "", "", "npc_beef_noodle"),
+        ("n_l3_v5_whatis",        "d_l3_v5_002", "Excuse me, what is this dish?", "请问这是什么？", "", "", "npc_beef_noodle"),
+        ("n_l3_v5_explain",       "d_l3_v5_003", "This is Taiwan beef noodle soup! Our broth is simmered for 12 hours.", "这是台湾牛肉面！我们的汤头熬了十二个小时。", "", "", "npc_beef_noodle"),
+        ("n_l3_v5_allergen_ask",  "d_l3_v5_004", "Does this contain beef? I am allergic to beef.", "这个里面有牛肉吗？我对牛肉过敏。", "", "", "npc_beef_noodle"),
+        ("n_l3_v5_has_allergen",  "d_l3_v5_005", "Yes, it does contain beef. I am sorry!", "对，里面有牛肉。不好意思！", "", "", "npc_beef_noodle"),
+        ("n_l3_v5_decline",       "d_l3_v5_006", "No problem. No thank you then!", "没关系。不用了，谢谢！", "", "", "npc_beef_noodle"),
+        ("n_l3_v5_end",           "d_l3_v5_007", "Sorry about that! Come back for something else!", "不好意思！欢迎下次再来！", "", "", "npc_beef_noodle"),
 
         # Path 4: 卤肉饭 — No allergen, buys
-        ("n_l3_v4_greet",         "d_l3_v4_001", "Hello!", "老板好！", "", "npc_pork_rice"),
-        ("n_l3_v4_whatis",        "d_l3_v4_002", "Excuse me, what is this dish?", "请问这是什么？", "", "npc_pork_rice"),
-        ("n_l3_v4_explain",       "d_l3_v4_003", "This is minced pork rice! Braised pork belly over white rice.", "这是卤肉饭！卤猪肉配白饭。", "", "npc_pork_rice"),
-        ("n_l3_v4_allergen_ask",  "d_l3_v4_004", "Does this contain seafood? I am allergic to seafood.", "这个里面有海鲜吗？我对海鲜过敏。", "", "npc_pork_rice"),
-        ("n_l3_v4_no_allergen",   "d_l3_v4_005", "No seafood at all! Just pork, soy sauce, and spices.", "完全没有海鲜！只有猪肉、酱油和香料。", "", "npc_pork_rice"),
-        ("n_l3_v4_order",         "d_l3_v4_006", "Perfect! I will take one then.", "太好了！那我要一个。", "", "npc_pork_rice"),
-        ("n_l3_v4_complete",      "d_l3_v4_007", "Here you go! Enjoy!", "来！请慢用！", "", "npc_pork_rice"),
+        ("n_l3_v4_greet",         "d_l3_v4_001", "Hello!", "老板好！", "", "", "npc_pork_rice"),
+        ("n_l3_v4_whatis",        "d_l3_v4_002", "Excuse me, what is this dish?", "请问这是什么？", "", "", "npc_pork_rice"),
+        ("n_l3_v4_explain",       "d_l3_v4_003", "This is minced pork rice! Braised pork belly over white rice.", "这是卤肉饭！卤猪肉配白饭。", "", "", "npc_pork_rice"),
+        ("n_l3_v4_allergen_ask",  "d_l3_v4_004", "Does this contain seafood? I am allergic to seafood.", "这个里面有海鲜吗？我对海鲜过敏。", "", "", "npc_pork_rice"),
+        ("n_l3_v4_no_allergen",   "d_l3_v4_005", "No seafood at all! Just pork, soy sauce, and spices.", "完全没有海鲜！只有猪肉、酱油和香料。", "", "", "npc_pork_rice"),
+        ("n_l3_v4_order",         "d_l3_v4_006", "Perfect! I will take one then.", "太好了！那我要一个。", "", "", "npc_pork_rice"),
+        ("n_l3_v4_complete",      "d_l3_v4_007", "Here you go! Enjoy!", "来！请慢用！", "", "", "npc_pork_rice"),
 
         # Path 5: 蚵仔煎 — Sauce options
-        ("n_l3_v1_greet",         "d_l3_v1_001", "Hello!", "老板好！", "", "npc_oyster_omelette"),
-        ("n_l3_v1_whatis",        "d_l3_v1_002", "Excuse me, what is this dish?", "请问这是什么？", "", "npc_oyster_omelette"),
-        ("n_l3_v1_explain",       "d_l3_v1_003", "This is oyster omelette! Made with fresh oysters and egg.", "这是蚵仔煎！用新鲜蚵仔和鸡蛋做的。", "", "npc_oyster_omelette"),
-        ("n_l3_v1_inside",        "d_l3_v1_004", "What is inside?", "里面有什么？", "", "npc_oyster_omelette"),
-        ("n_l3_v1_vendor_inside", "d_l3_v1_005", "Oysters, egg, sweet potato starch, and vegetables!", "蚵仔、鸡蛋、地瓜粉还有蔬菜！", "", "npc_oyster_omelette"),
-        ("n_l3_v1_sauce_ask",     "d_l3_v1_006", "Which sauce would you like?", "你要哪种酱？", "", "npc_oyster_omelette"),
-        ("n_l3_v1_sauce_options", "d_l3_v1_007", "We have original sauce, wasabi, or Thai sweet chili sauce!", "我们有原味照烧酱、哇沙米、或泰式甜辣酱！", "", "npc_oyster_omelette"),
-        ("n_l3_v1_original",      "d_l3_v1_008", "Original sauce please!", "原味照烧酱！", "", "npc_oyster_omelette"),
-        ("n_l3_v1_wasabi",        "d_l3_v1_009", "Wasabi please!", "哇沙米！", "", "npc_oyster_omelette"),
-        ("n_l3_v1_thai_chili",    "d_l3_v1_010", "Thai sweet chili sauce please!", "泰式甜辣酱！", "", "npc_oyster_omelette"),
-        ("n_l3_v1_complete",      "d_l3_v1_011", "Here you go! Enjoy!", "来！请慢用！", "", "npc_oyster_omelette"),
+        ("n_l3_v1_greet",         "d_l3_v1_001", "Hello!", "老板好！", "", "", "npc_oyster_omelette"),
+        ("n_l3_v1_whatis",        "d_l3_v1_002", "Excuse me, what is this dish?", "请问这是什么？", "", "", "npc_oyster_omelette"),
+        ("n_l3_v1_explain",       "d_l3_v1_003", "This is oyster omelette! Made with fresh oysters and egg.", "这是蚵仔煎！用新鲜蚵仔和鸡蛋做的。", "", "", "npc_oyster_omelette"),
+        ("n_l3_v1_inside",        "d_l3_v1_004", "What is inside?", "里面有什么？", "", "", "npc_oyster_omelette"),
+        ("n_l3_v1_vendor_inside", "d_l3_v1_005", "Oysters, egg, sweet potato starch, and vegetables!", "蚵仔、鸡蛋、地瓜粉还有蔬菜！", "", "", "npc_oyster_omelette"),
+        ("n_l3_v1_sauce_ask",     "d_l3_v1_006", "Which sauce would you like?", "你要哪种酱？", "", "", "npc_oyster_omelette"),
+        ("n_l3_v1_sauce_options", "d_l3_v1_007", "We have original sauce, wasabi, or Thai sweet chili sauce!", "我们有原味照烧酱、哇沙米、或泰式甜辣酱！", "", "", "npc_oyster_omelette"),
+        ("n_l3_v1_original",      "d_l3_v1_008", "Original sauce please!", "原味照烧酱！", "", "", "npc_oyster_omelette"),
+        ("n_l3_v1_wasabi",        "d_l3_v1_009", "Wasabi please!", "哇沙米！", "", "", "npc_oyster_omelette"),
+        ("n_l3_v1_thai_chili",    "d_l3_v1_010", "Thai sweet chili sauce please!", "泰式甜辣酱！", "", "", "npc_oyster_omelette"),
+        ("n_l3_v1_complete",      "d_l3_v1_011", "Here you go! Enjoy!", "来！请慢用！", "", "", "npc_oyster_omelette"),
     ]
-    cursor.executemany("INSERT OR IGNORE INTO dialogues VALUES (?,?,?,?,?,?)", dialogues)
+    cursor.executemany("INSERT OR IGNORE INTO dialogues VALUES (?,?,?,?,?,?,?)", dialogues)
     print(f"  Inserted {len(dialogues)} dialogue lines")
 
 
@@ -341,7 +341,7 @@ def verify(cursor):
 
     print("\n── Sample: Sauce Options Path (蚵仔煎) ──────────────────────")
     rows = cursor.execute("""
-        SELECT node_id, dialogue, translation
+        SELECT node_id, dialogue, translation_HAN
         FROM dialogues WHERE node_id LIKE 'n_l3_v1%'
         ORDER BY dialogue_id
     """).fetchall()

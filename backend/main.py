@@ -570,11 +570,11 @@ class App:
                 d = self.dialogue_manager.get_dialogue(node[0])
                 if d:
                     audio_binary = ""
-                    if d[0][4] != "":
-                        with open(d[0][4], "rb") as f:
+                    if d[0][5] != "":
+                        with open(d[0][5], "rb") as f:
                             audio_binary = base64.b64encode(f.read()).decode("utf-8")
-                    audio_src = { "audio_path": d[0][4], "audio_binary": audio_binary }
-                    dialogues[node[0]] = {"dialogue_id": d[0][1], "dialogue": d[0][2], "translation": d[0][3], "audio_src": audio_src }
+                    audio_src = { "audio_path": d[0][5], "audio_binary": audio_binary }
+                    dialogues[node[0]] = {"dialogue_id": d[0][1], "dialogue": d[0][2], "translation_HAN": d[0][3], "translation_POJ": d[0][4], "audio_src": audio_src }
             return jsonify({
                 "status": "success",
                 "data": [{"node_id": n[0], "parent_node_id": n[1], "npc_id": n[2], "dialogue": dialogues.get(n[0])} for n in nodes]
@@ -616,17 +616,19 @@ class App:
                 return jsonify({"status": "error", "message": "Dialogue not found"}), 404
             return jsonify({
                 "status": "success",
-                "data": {"node_id": d[0][0], "dialogue_id": d[0][1], "dialogue": d[0][2], "translation": d[0][3], "audio_src": d[0][4], "npc_id": d[0][5]}
+                "data": {"node_id": d[0][0], "dialogue_id": d[0][1], "dialogue": d[0][2], "translation_HAN": d[0][3], "translation_POJ": d[0][4], "audio_src": d[0][5], "npc_id": d[0][6]}
             }), 200
 
         @self.app.route("/api/admin/dialogues/<node_id>", methods=["PUT"])
         def admin_update_dialogue(node_id):
             body = request.get_json()
             dialogue_text = body.get("dialogue")
-            translation = body.get("translation")
+            translation_HAN = body.get("translationHAN")
+            translation_POJ = body.get("translationPOJ")
+
             if dialogue_text is None:
                 return jsonify({"status": "error", "message": "dialogue required"}), 400
-            result = self.dialogue_manager.update_dialogue(node_id, dialogue_text, translation, "" or "")
+            result = self.dialogue_manager.update_dialogue(node_id, dialogue_text, translation_HAN, translation_POJ, "" or "")
             return jsonify({"status": "success", "data": result}), 200
 
         @self.app.route("/api/admin/options/<node_id>", methods=["GET"])
@@ -751,7 +753,14 @@ class App:
             dialogue_text = body.get("input_text")
             translation = self.hokTranslation.translate(dialogue_text, output_lang)
             dialogue = self.dialogue_manager.get_dialogue(node_id)
-            result = self.dialogue_manager.update_dialogue(node_id, dialogue[0][2], translation, dialogue[0][4] or "")
+            translation_HAN = dialogue[0][3]
+            translation_POJ = dialogue[0][4]
+            if output_lang == 'POJ':
+                translation_POJ = translation
+            else:
+                translation_HAN = translation
+
+            result = self.dialogue_manager.update_dialogue(node_id, dialogue[0][2], translation_HAN, translation_POJ, dialogue[0][5] or "")
             return jsonify({"status": "success", "data": result}), 200
 
         @self.app.route("/api/admin/model/tts/<node_id>", methods=["POST"])
@@ -760,7 +769,7 @@ class App:
             translation = body.get("translation_text")
             audio_src = self.hokTTS.generate_tts(node_id, translation)
             dialogue = self.dialogue_manager.get_dialogue(node_id)
-            result = self.dialogue_manager.update_dialogue(node_id, dialogue[0][2], dialogue[0][3], audio_src or "")
+            result = self.dialogue_manager.update_dialogue(node_id, dialogue[0][2], dialogue[0][3], dialogue[0][4], audio_src or "")
             return jsonify({"status": "success", "data": result}), 200
 
         self.app.run(host="0.0.0.0", port=8000, debug=False)
