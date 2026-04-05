@@ -1,6 +1,6 @@
 from .sql_db import SQL_DB
 import os
-import psycopg2
+#import psycopg2
 
 class Hok_DB:
     def __init__(self, mode=1):
@@ -14,8 +14,10 @@ class Hok_DB:
         db_url = os.environ.get("DATABASE_URL")
         
         if db_url:
+           #Import only when needed for Supabase
+            import psycopg2 
             print("Connecting to Supabase PostgreSQL...")
-            # We tell SQL_DB to use the URL instead of a local path
+            from .sql_db import SQL_DB # Ensure relative import works
             return SQL_DB(db_url=db_url)
             
         # 2. Fallback to SQLite (Local Development)
