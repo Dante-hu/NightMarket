@@ -342,7 +342,7 @@ class App:
                 },
                 "meta": {"process_time_ms": 123}
             }), 200
-        
+
         @self.app.route("/api/v1/generate/audio-blob", methods=["POST"])
         def fetch_audio_blob():
             request_body = request.get_json()
@@ -525,11 +525,11 @@ class App:
         def admin_static(filename):
             return send_from_directory(admin_dir, filename)
 
-        @self.app.route("/audio/<path:filename>")
+        @self.app.route('/audio-clips/<path:filename>')
         def serve_audio(filename):
-            from flask import send_from_directory, mimetypes
-            mimetypes.add_type('audio/wav', '.wav')
-            return send_from_directory("audio-clips", filename, mimetype='audio/wav')
+            audio_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'audio-clips')
+            print(f"[AUDIO] Serving from: {audio_dir}/{filename} | exists: {os.path.exists(os.path.join(audio_dir, filename))}")
+            return send_from_directory(audio_dir, filename, mimetype='audio/wav')
 
         @self.app.route("/api/admin/npcs", methods=["GET"])
         def admin_get_npcs():
