@@ -50,7 +50,11 @@ function hideNpcForm() {
 async function createNpc() {
     const enteredId = document.getElementById('new-npc-id').value.trim();
     const id = enteredId || 'npc_' + Date.now();
-    const name = document.getElementById('new-npc-name').value.trim() || 'New NPC';
+    const name = document.getElementById('new-npc-name').value.trim();
+    if (!name) {
+        alert('Name is required');
+        return;
+    }
     try {
         await API.npcs.create({ npc_id: id, npc_name: name });
         hideNpcForm();
