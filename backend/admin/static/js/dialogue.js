@@ -90,7 +90,8 @@ function renderNode(node, depth) {
     }
     
     const dialogueText = esc(dialogue.dialogue);
-    const translationText = esc(dialogue.translation);
+    const translationText = esc(dialogue.translation_HAN);
+    const translationPOJ = esc(dialogue.translation_POJ);
     const nodeId = esc(node.node_id);
 
     return `
@@ -145,7 +146,7 @@ function renderNode(node, depth) {
                         ` : `
                         <span class="subtext" style="font-size: 10px; display: block; margin-bottom: 6px;">No audio generated</span>
                         `}
-                        <button onclick="generateTTS('${translationText}','${nodeId}')" class="gen-btn">Generate Audio</button>
+                        <button onclick="generateTTS('${translationPOJ}','${nodeId}')" class="gen-btn">Generate Audio</button>
                     </div>
                     <div style="margin-bottom: 4px;">
                         <button onclick="addOption('${node.node_id}')" class="link">+ Add Option</button>
@@ -317,7 +318,7 @@ async function deleteOption(optionId, nodeId) {
     loadDialogueTree();
 }
 
-async function generateTranslations(dialougeText, nodeId, targetLang){
+async function generateTranslations(dialogueText, nodeId, targetLang){
     const statusEl = document.getElementById('save-status-' + nodeId);
     const btnEl = event.target;
     if (dialogueText == "") { return }
