@@ -576,10 +576,11 @@ class App:
                 d = self.dialogue_manager.get_dialogue(node[0])
                 if d:
                     audio_binary = ""
-                    if d[0][5] != "":
-                        with open(d[0][5], "rb") as f:
+                    audio_path = d[0][5] if d[0][5] else ""
+                    if audio_path and os.path.exists(audio_path):
+                        with open(audio_path, "rb") as f:
                             audio_binary = base64.b64encode(f.read()).decode("utf-8")
-                    audio_src = { "audio_path": d[0][5], "audio_binary": audio_binary }
+                    audio_src = { "audio_path": audio_path, "audio_binary": audio_binary }
                     dialogues[node[0]] = {"dialogue_id": d[0][1], "dialogue": d[0][2], "translation_HAN": d[0][3], "translation_POJ": d[0][4], "audio_src": audio_src }
             return jsonify({
                 "status": "success",
