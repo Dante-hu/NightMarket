@@ -9,6 +9,14 @@ import base64
 import os
 import re
 
+try:
+    from models.hok_translation import HokTranslation
+    from models.hok_tts import HokTTS
+except ImportError:
+    print("[WARNING] Translation/TTS models not available — running without them")
+    HokTranslation = None
+    HokTTS = None
+
 class App:
     def __init__(self, mode=2):
         self.mode = mode
@@ -25,8 +33,8 @@ class App:
         self.dialogue_manager = Dialogue_Manager(self.mode)
         self.vendor_manager = Vendor_Manager(self.mode)
         self.challenge_manager = Challenge_Manager(self.mode)
-        self.hokTTS = HokTTS()
-        self.hokTranslation = HokTranslation()
+        self.hokTTS = HokTTS() if HokTTS else None
+        self.hokTranslation = HokTranslation() if HokTranslation else None
             
         self.app = Flask(import_name="Hokkien Game")
 
@@ -770,6 +778,10 @@ class App:
             return jsonify({"status": "success", "data": result}), 200
 
         self.app.run(host="0.0.0.0", port=8000, debug=False)
+
+        @self.app.route("/health")#simple check for render.com to see if the server is running
+        def health():
+            return "OK", 200
 
 def select_launch_mode():
     prompt = '''
