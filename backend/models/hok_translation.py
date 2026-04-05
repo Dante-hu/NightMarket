@@ -14,10 +14,12 @@ class HokTranslation:
         print("[HokTranslation] Running in stub mode — translation model not loaded")
 
 
-    def get_pipeline(self, path:str, tokenizer:AutoTokenizer, accelerator:accelerate.Accelerator) -> TextGenerationPipeline:
+    def get_pipeline(self, path:str, tokenizer:'AutoTokenizer', accelerator:'accelerate.Accelerator') -> 'TextGenerationPipeline':
          return "translation not available"
 
     def translate(self, source_sentence:str, target_language:str) -> str:
+        if not self.pipe:
+            return "Translation unavailable in preview mode."
         prompt = PROMPT_TEMPLATE.format(source_sentence=source_sentence, target_language=target_language)
         out = self.pipe(prompt, return_full_text=False, repetition_penalty=1.1, do_sample=False)[0]['generated_text']
         text = out[:out.find("[/")].strip()
