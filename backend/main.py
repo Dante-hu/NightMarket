@@ -777,32 +777,40 @@ class App:
             result = self.dialogue_manager.update_dialogue(node_id, dialogue[0][2], dialogue[0][3], audio_src or "")
             return jsonify({"status": "success", "data": result}), 200
 
-        self.app.run(host="0.0.0.0", port=8000, debug=False)
+        #self.app.run(host="0.0.0.0", port=8000, debug=False) #render handles running the server, so we don't call app.run() here for deployment. Local development runs from the __main__ block below.
 
         @self.app.route("/health")#simple check for render.com to see if the server is running
         def health():
             return "OK", 200
 
+#Module-level app for Gunicorn production deployment. Local development runs from the __main__ block below.
+# This runs automatically when deployed on Render.
+_deploy_instance = App(mode=2)
+_deploy_instance.create_app()
+_deploy_instance.create_endpoints()
+app = _deploy_instance.app
+
+
+#Local development entry point 
 def select_launch_mode():
     prompt = '''
 Select launch mode...
-        
+
 > Press 0 | Launch in default mode
 > Press 1 | Launch in test mode
 > Press 2 | Launch in lesson mode
-'''      
+'''
     mode = input(prompt)
     match mode:
-        case "0":
-            return 0
-        case "1":
-            return 1
-        case "2":
-            return 2
-        case _:
-            raise Exception("Error, mode selected is invalid.") 
+        case "0": return 0
+        case "1": return 1
+        case "2": return 2
+        case _: raise Exception("Error, mode selected is invalid.")
+
 
 if __name__ == "__main__":
     mode = select_launch_mode()
-    app = App(mode)
-    app.run()
+    local_app = App(mode)
+    local_app.create_app()
+    local_app.create_endpoints()
+    local_app.app.run(host="0.0.0.0", port=8000, debug=False)
