@@ -244,9 +244,10 @@ function syncFromInput(optionId, value) {
 
 async function saveDialogue(nodeId) {
     const dialogue = document.getElementById('dialogue-' + nodeId).value;
-    const translation = document.getElementById('translation-' + nodeId).value;
+    const translationHAN = document.getElementById('translation-' + nodeId + '-HAN').value;
+    const translationPOJ = document.getElementById('translation-' + nodeId + '-POJ').value;
     expandedNodes.add(nodeId);
-    await API.dialogue.updateDialogue(nodeId, { dialogue, translation });
+    await API.dialogue.updateDialogue(nodeId, { dialogue, translationHAN, translationPOJ });
     loadDialogueTree();
 }
 
