@@ -37,7 +37,8 @@ class TestGetDialogueNode:
         dialogue = res.get_json()["data"]["dialogue"]
         assert "dialogue_id" in dialogue
         assert "text" in dialogue
-        assert "translation" in dialogue
+        assert "translation_HAN" in dialogue
+        assert "translation_POJ" in dialogue
         assert "audio" in dialogue
         assert "npc_id" in dialogue
         assert "key_words" in dialogue
