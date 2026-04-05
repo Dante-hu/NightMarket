@@ -135,7 +135,7 @@ class Dialogue_Manager(Hok_DB):
         return self.get_dialogue(node_id)
 
     def create_dialogue(self, node_id, dialogue_id, dialogue_text, translation, npc_id):
-        self.db.insert("dialogues", [{"node_id": node_id, "dialogue_id": dialogue_id, "dialogue": dialogue_text, "translation": translation, "audio_clip": "", "npc_id": npc_id}])
+        self.db.insert("dialogues", [{"node_id": node_id, "dialogue_id": dialogue_id, "dialogue": dialogue_text, "translation_HAN": translation, "translation_POJ": "", "audio_clip": "", "npc_id": npc_id}])
         return {"node_id": node_id, "dialogue_id": dialogue_id, "dialogue": dialogue_text}
 
     def update_dialogue(self, node_id, dialogue_text, translation_HAN, translation_POJ, audio_path):
