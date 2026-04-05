@@ -18,7 +18,9 @@ class Dialogue_Manager(Hok_DB):
                 "word": key_word[2],
                 "translation": key_word[3],
                 "context": key_word[4],
-                "audio": key_word[5]
+                "audio": key_word[5],
+                "english_word": key_word[6] if len(key_word) > 6 else ""
+                
             })
 
         options = self.get_node_options(node_id)
