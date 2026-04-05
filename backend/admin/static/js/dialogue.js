@@ -116,12 +116,12 @@ function renderNode(node, depth) {
                     <div style="margin-bottom: 8px;">
                         <label style="display: block; font-size: 10px; color: var(--subtext); margin-bottom: 4px;">Translation</label>
                         <input id="translation-${node.node_id}-HAN" class="input" value="${dialogue.translation_HAN || ''}" oninput="autoSave('${node.node_id}')" placeholder="Enter HAN translation...">
-                        <button data-text="${dialogueText}" data-node="${nodeId}" onclick="generateTranslations(this.dataset.text, this.dataset.node, 'HAN')" class="gen-btn">Generate Translations</button>
+                        <button onclick="generateTranslations(document.getElementById('dialogue-${node.node_id}').value,'${node.node_id}','HAN')" class="gen-btn">Generate Translations</button>
                     </div>
                     <div style="margin-bottom: 8px;">
                         <label style="display: block; font-size: 10px; color: var(--subtext); margin-bottom: 4px;">Translation</label>
                         <input id="translation-${node.node_id}-POJ" class="input" value="${dialogue.translation_POJ || ''}" oninput="autoSave('${node.node_id}')" placeholder="Enter POJ translation...">
-                        <button onclick="generateTranslations('${dialogue.dialogue || ""}','${node.node_id}','POJ')" class="gen-btn">Generate Translations</button>
+                        <button onclick="generateTranslations(document.getElementById('dialogue-${node.node_id}').value,'${node.node_id}','POJ')" class="gen-btn">Generate Translations</button>
                     </div>
                     <div style="margin-bottom: 8px;">
                         <label style="display: block; font-size: 10px; color: var(--subtext); margin-bottom: 4px;">Audio</label>
@@ -146,7 +146,7 @@ function renderNode(node, depth) {
                         ` : `
                         <span class="subtext" style="font-size: 10px; display: block; margin-bottom: 6px;">No audio generated</span>
                         `}
-                        <button onclick="generateTTS('${translationPOJ}','${nodeId}')" class="gen-btn">Generate Audio</button>
+                        <button onclick="generateTTS(document.getElementById('translation-${node.node_id}-POJ').value,'${nodeId}')" class="gen-btn">Generate Audio</button>
                     </div>
                     <div style="margin-bottom: 4px;">
                         <button onclick="addOption('${node.node_id}')" class="link">+ Add Option</button>
@@ -320,9 +320,13 @@ async function deleteOption(optionId, nodeId) {
 }
 
 async function generateTranslations(dialogueText, nodeId, targetLang){
+    console.log("[generateTranslations] dialogueText:", dialogueText, "nodeId:", nodeId, "targetLang:", targetLang);
     const statusEl = document.getElementById('save-status-' + nodeId);
     const btnEl = event.target;
-    if (dialogueText == "") { return }
+    if (!dialogueText || dialogueText == "") { 
+        alert("Please enter dialogue text first");
+        return 
+    }
     try {
         btnEl.classList.add('loading');
         btnEl.disabled = true;
@@ -349,9 +353,13 @@ async function generateTranslations(dialogueText, nodeId, targetLang){
 }
 
 async function generateTTS(translatedText, nodeId){
+    console.log("[generateTTS] translatedText:", translatedText, "nodeId:", nodeId);
     const statusEl = document.getElementById('save-status-' + nodeId);
     const btnEl = event.target;
-    if (translatedText == "") { return }
+    if (!translatedText || translatedText == "") { 
+        alert("Please generate a translation first");
+        return 
+    }
     try {
         btnEl.classList.add('loading');
         btnEl.disabled = true;
