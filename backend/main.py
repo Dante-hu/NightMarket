@@ -525,6 +525,12 @@ class App:
         def admin_static(filename):
             return send_from_directory(admin_dir, filename)
 
+        @self.app.route("/audio/<path:filename>")
+        def serve_audio(filename):
+            from flask import send_from_directory, mimetypes
+            mimetypes.add_type('audio/wav', '.wav')
+            return send_from_directory("audio-clips", filename, mimetype='audio/wav')
+
         @self.app.route("/api/admin/npcs", methods=["GET"])
         def admin_get_npcs():
             npcs = self.dialogue_manager.get_all_npcs()
