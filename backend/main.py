@@ -8,6 +8,7 @@ from managers.challenge_manager import Challenge_Manager
 import base64
 import os
 import re
+from flask_cors import CORS
 
 try:
     from models.hok_translation import HokTranslation
@@ -35,8 +36,9 @@ class App:
         self.challenge_manager = Challenge_Manager(self.mode)
         self.hokTTS = HokTTS() if HokTTS else None
         self.hokTranslation = HokTranslation() if HokTranslation else None
-            
+        
         self.app = Flask(import_name="Hokkien Game")
+        CORS(self.app)#added cors for deployoment in uinty portion
 
     def create_endpoints(self):
         print("\nStarting Flask app...")
