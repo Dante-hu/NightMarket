@@ -337,7 +337,10 @@ async function generateTranslations(dialogueText, nodeId, targetLang){
         btnEl.classList.add('success');
         btnEl.textContent = 'Generated';
     } catch (e) {
-        console.log(e) 
+        console.log(e);
+        if (e.message && e.message.includes('not available')) {
+            alert("Translation model is not available.\n\nThis server is running in production mode without ML models enabled. To use translation features, run locally with ML models enabled.");
+        }
         statusEl.textContent = 'Error';
         btnEl.classList.add('error');
         btnEl.textContent = 'Failed';
@@ -370,7 +373,10 @@ async function generateTTS(translatedText, nodeId){
         btnEl.classList.add('success');
         btnEl.textContent = 'Generated';
     } catch (e) {
-        console.log(e) 
+        console.log(e);
+        if (e.message && e.message.includes('not available')) {
+            alert("TTS model is not available.\n\nThis server is running in production mode without ML models enabled. To use audio generation, run locally with ML models enabled.");
+        }
         statusEl.textContent = 'Error';
         btnEl.classList.add('error');
         btnEl.textContent = 'Failed';
