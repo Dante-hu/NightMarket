@@ -1,6 +1,5 @@
 from flask import Flask, request, jsonify, send_from_directory
-from models.hok_translation import HokTranslation
-from models.hok_tts import HokTTS
+from flask_cors import CORS
 from database.hok_db import Hok_DB
 from managers.dialogue_manager import Dialogue_Manager
 from managers.vendor_manager import Vendor_Manager
@@ -9,9 +8,18 @@ import base64
 import os
 import re
 
+try:
+    from models.hok_translation import HokTranslation
+    from models.hok_tts import HokTTS
+except ImportError:
+    print("[WARNING] Translation/TTS models not available — running without them")
+    HokTranslation = None
+    HokTTS = None
+
 class App:
-    def __init__(self, mode=2):
+    def __init__(self, mode=2, skip_models=False):
         self.mode = mode
+        self.skip_models = skip_models
         self.dialogue_manager = None
         self.vendor_manager = None
         self.challenge_manager = None
@@ -25,10 +33,17 @@ class App:
         self.dialogue_manager = Dialogue_Manager(self.mode)
         self.vendor_manager = Vendor_Manager(self.mode)
         self.challenge_manager = Challenge_Manager(self.mode)
-        self.hokTTS = HokTTS()
-        self.hokTranslation = HokTranslation()
+
+        if self.skip_models:
+            print("[INFO] Skipping ML models (translation/TTS)")
+            self.hokTTS = None
+            self.hokTranslation = None
+        else:
+            self.hokTTS = HokTTS() if HokTTS else None
+            self.hokTranslation = HokTranslation() if HokTranslation else None
             
         self.app = Flask(import_name="Hokkien Game")
+        CORS(self.app)
 
     def create_endpoints(self):
         print("\nStarting Flask app...")
@@ -375,7 +390,8 @@ class App:
         
         @self.app.route("/audio-test")
         def get_audio_test():
-            with open("audio-clips/test_audio.mp3", 'rb') as f:
+            audio_test_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'audio-clips', 'test_audio.mp3')
+            with open(audio_test_path, 'rb') as f:
                 encoded_string = base64.b64encode(f.read()).decode('utf-8')
 
             return jsonify({
@@ -527,7 +543,7 @@ class App:
 
         @self.app.route('/audio-clips/<path:filename>')
         def serve_audio(filename):
-            audio_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'audio-clips')
+            audio_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'audio-clips')
             print(f"[AUDIO] Serving from: {audio_dir}/{filename} | exists: {os.path.exists(os.path.join(audio_dir, filename))}")
             return send_from_directory(audio_dir, filename, mimetype='audio/wav')
 
@@ -597,7 +613,7 @@ class App:
                 return jsonify({"status": "error", "message": "node_id, parent_node_id, npc_id required"}), 400
             result = self.dialogue_manager.create_node(node_id, parent_node_id, npc_id)
             dialogue_id = f"d_{node_id}"
-            self.dialogue_manager.create_dialogue(node_id, dialogue_id, "", "", npc_id)
+            self.dialogue_manager.create_dialogue(node_id, dialogue_id, "", "", "", npc_id)
             return jsonify({"status": "success", "data": result}), 201
 
         @self.app.route("/api/admin/dialogue-nodes/<node_id>", methods=["PUT"])
@@ -755,6 +771,8 @@ class App:
 
         @self.app.route("/api/admin/model/translate/<node_id>", methods=["POST"])
         def admin_model_generate_translate(node_id):
+            if not self.hokTranslation:
+                return jsonify({"status": "error", "message": "Translation model not available"}), 503
             body = request.get_json()
             output_lang = body.get("output_lang")
             dialogue_text = body.get("input_text")
@@ -772,6 +790,8 @@ class App:
 
         @self.app.route("/api/admin/model/tts/<node_id>", methods=["POST"])
         def admin_model_generate_tts(node_id):
+            if not self.hokTTS:
+                return jsonify({"status": "error", "message": "TTS model not available"}), 503
             body = request.get_json()
             translation = body.get("translation_text")
             audio_src = self.hokTTS.generate_tts(node_id, translation)
@@ -779,28 +799,59 @@ class App:
             result = self.dialogue_manager.update_dialogue(node_id, dialogue[0][2], dialogue[0][3], dialogue[0][4], audio_src or "")
             return jsonify({"status": "success", "data": result}), 200
 
+        @self.app.route("/health")
+        def health():
+            return "OK", 200
+
+    def run_local(self):
         self.app.run(host="0.0.0.0", port=8000, debug=False)
 
-def select_launch_mode():
-    prompt = '''
-Select launch mode...
-        
-> Press 0 | Launch in default mode
-> Press 1 | Launch in test mode
-> Press 2 | Launch in lesson mode
-'''      
-    mode = input(prompt)
-    match mode:
-        case "0":
-            return 0
-        case "1":
-            return 1
-        case "2":
-            return 2
-        case _:
-            raise Exception("Error, mode selected is invalid.") 
+
+def create_deploy_app():
+    """Create app for production deployment (Gunicorn)"""
+    deploy_app = App(mode=2, skip_models=True)
+    deploy_app.create_app()
+    deploy_app.create_endpoints()
+    return deploy_app.app
+
+
+# Create app at module level only when imported by Gunicorn (not when running directly)
+# This avoids loading ML models when user runs: python main.py
+if __name__ != "__main__":
+    app = create_deploy_app()
+else:
+    app = None
+
 
 if __name__ == "__main__":
-    mode = select_launch_mode()
-    app = App(mode)
-    app.run()
+    import os
+    skip_models = os.environ.get("SKIP_MODELS", "").lower() in ("1", "true", "yes")
+
+    if os.environ.get("RUN_MODE") == "production":
+        # Gunicorn will import this module and use the `app` variable
+        # No action needed - app is already created above
+        pass
+    else:
+        # Local development with mode selection
+        print("\n=== Local Development Mode ===")
+        print("Options:")
+        print("  0 - Default mode (with ML models)")
+        print("  1 - Test mode (with ML models)")
+        print("  2 - Lesson mode (with ML models)")
+        print("  3 - Skip ML models (faster startup)")
+        print("  4 - Skip ML models + test mode")
+        print("  5 - Skip ML models + lesson mode")
+
+        mode_input = input("\nSelect mode [0-5]: ").strip()
+
+        # Handle skip models modes
+        if mode_input in ("3", "4", "5"):
+            skip_models = True
+            mode = int(mode_input) - 3  # 3->0, 4->1, 5->2
+        else:
+            mode = int(mode_input) if mode_input else 2
+
+        local_app = App(mode, skip_models=skip_models)
+        local_app.create_app()
+        local_app.create_endpoints()
+        local_app.run_local()

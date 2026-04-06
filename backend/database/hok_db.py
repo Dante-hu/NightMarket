@@ -34,7 +34,7 @@ class Hok_DB:
         self.db.create_table("dialogue_nodes", "node_id TEXT, parent_node_id TEXT, npc_id TEXT")
         self.db.create_table("npcs", "npc_id TEXT, npc_name TEXT")
 
-        self.db.create_table("dialogues", "node_id TEXT, dialogue_id TEXT, dialogue TEXT, translation TEXT, audio_clip TEXT, npc_id TEXT")
+        self.db.create_table("dialogues", "node_id TEXT, dialogue_id TEXT, dialogue TEXT, translation_HAN TEXT, translation_POJ TEXT, audio_clip TEXT, npc_id TEXT")
         #self.db.create_table("words", "dialogue_id TEXT, word_id TEXT, word TEXT, translation TEXT, conTEXT TEXT, audio_clip TEXT")
 
         self.db.create_table("options", "node_id TEXT, option_id TEXT, option_TEXT TEXT, next_node_id TEXT, feedback_type TEXT")
