@@ -9,7 +9,7 @@ class HokTTS:
         self.model = VitsModel.from_pretrained("facebook/mms-tts-nan")
         self.tokenizer = AutoTokenizer.from_pretrained("facebook/mms-tts-nan")
         self.output_dir = os.path.join(
-            os.path.dirname(os.path.abspath(__file__)), "..", "audio-clips"
+            os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "audio-clips"
         )
         os.makedirs(self.output_dir, exist_ok=True)
 
@@ -24,4 +24,4 @@ class HokTTS:
         scipy.io.wavfile.write(
             wav_path, rate=self.model.config.sampling_rate, data=output
         )
-        return f"audio-clips/{node_id}.wav"
+        return os.path.join(self.output_dir, f"{node_id}.wav")
