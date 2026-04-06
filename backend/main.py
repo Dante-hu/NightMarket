@@ -16,6 +16,7 @@ except ImportError:
     HokTranslation = None
     HokTTS = None
 
+
 class App:
     def __init__(self, mode=2, skip_models=False):
         self.mode = mode
@@ -41,13 +42,13 @@ class App:
         else:
             self.hokTTS = HokTTS() if HokTTS else None
             self.hokTranslation = HokTranslation() if HokTranslation else None
-            
+
         self.app = Flask(import_name="Hokkien Game")
         CORS(self.app)
 
     def create_endpoints(self):
         print("\nStarting Flask app...")
-        #mock data for contract apis
+        # mock data for contract apis
         MOCK_USER_STATS = {
             "u123": {
                 "user_id": "u123",
@@ -56,9 +57,9 @@ class App:
                 "activity_heatmap": {
                     "2026-02-18": 5,
                     "2026-02-19": 12,
-                    "2026-02-20": 8
+                    "2026-02-20": 8,
                 },
-                "preferred_language": "hokkien"
+                "preferred_language": "hokkien",
             }
         }
 
@@ -70,14 +71,14 @@ class App:
                     {
                         "item_id": "item_apple",
                         "challenge_id": "c001",
-                        "acquired_at": "2026-03-19T20:00:00Z"
+                        "acquired_at": "2026-03-19T20:00:00Z",
                     },
                     {
                         "item_id": "item_peanut",
                         "challenge_id": "c001",
-                        "acquired_at": "2026-03-19T20:05:00Z"
-                    }
-                ]
+                        "acquired_at": "2026-03-19T20:05:00Z",
+                    },
+                ],
             },
             "u_4eaab2a1": {
                 "user_id": "u_4eaab2a1",
@@ -86,15 +87,15 @@ class App:
                     {
                         "item_id": "item_noodle",
                         "challenge_id": "c_mock_01",
-                        "acquired_at": "2026-03-19T20:10:00Z"
+                        "acquired_at": "2026-03-19T20:10:00Z",
                     },
                     {
                         "item_id": "item_soup",
                         "challenge_id": "c_mock_01",
-                        "acquired_at": "2026-03-19T20:11:00Z"
-                    }
-                ]
-            }
+                        "acquired_at": "2026-03-19T20:11:00Z",
+                    },
+                ],
+            },
         }
 
         DEFAULT_MOCK_INVENTORY = {
@@ -103,14 +104,14 @@ class App:
                 {
                     "item_id": "item_noodle",
                     "challenge_id": "c_mock_01",
-                    "acquired_at": "2026-03-19T20:10:00Z"
+                    "acquired_at": "2026-03-19T20:10:00Z",
                 },
                 {
                     "item_id": "item_soup",
                     "challenge_id": "c_mock_01",
-                    "acquired_at": "2026-03-19T20:11:00Z"
-                }
-            ]
+                    "acquired_at": "2026-03-19T20:11:00Z",
+                },
+            ],
         }
 
         @self.app.route("/api/v1/user/<user_id>/stats", methods=["GET"])
@@ -123,17 +124,17 @@ class App:
                     "current_streak": 0,
                     "last_active_date": None,
                     "activity_heatmap": {},
-                    "preferred_language": "hokkien"
+                    "preferred_language": "hokkien",
                 }
             return jsonify(user), 200
 
         @self.app.route("/api/v1/vendors/<vendor_id>", methods=["GET"])
         def get_vendor_profile(vendor_id):
             """Gets the dialogue node given the node id
-        
+
             Args:
                 node_id: Id of dialogue node
-                
+
             Returns:
                 {
                     "status": "success",
@@ -148,19 +149,21 @@ class App:
             """
             vendor_data = self.vendor_manager.get_vendor_profile(vendor_id)
 
-            return jsonify({
-                "status": "success",
-                "data": vendor_data,
-                "meta": {"processTimeMS": 123}
-            }), 200
+            return jsonify(
+                {
+                    "status": "success",
+                    "data": vendor_data,
+                    "meta": {"processTimeMS": 123},
+                }
+            ), 200
 
         @self.app.route("/api/v1/dialogue/<node_id>", methods=["GET"])
         def get_dialogue_node(node_id):
             """Gets the dialogue node given the node id
-        
+
             Args:
                 node_id: Id of dialogue node
-                
+
             Returns:
                 {
                     "status": "success",
@@ -196,20 +199,18 @@ class App:
                 }
             """
             node_data = self.dialogue_manager.get_dialogue_node(node_id)
-            
-            return jsonify({
-                "status": "success",
-                "data": node_data,
-                "meta": {"processTimeMS": 123}
-            }), 200
-        
+
+            return jsonify(
+                {"status": "success", "data": node_data, "meta": {"processTimeMS": 123}}
+            ), 200
+
         @self.app.route("/api/v1/dialogue/root-nodes/<npc_id>")
         def get_dialogue_root_nodes(npc_id):
-            """Gets all the root dialogue nodes that are related to given npc 
-        
+            """Gets all the root dialogue nodes that are related to given npc
+
             Args:
                 npc_id: Id of npc
-                
+
             Returns:
                 {
                     "status": "success",
@@ -221,12 +222,10 @@ class App:
                 }
             """
             node_data = self.dialogue_manager.get_dialogue_root_nodes(npc_id)
-            
-            return jsonify({
-                "status": "success",
-                "data": node_data,
-                "meta": {"processTimeMS": 123}
-            }), 200
+
+            return jsonify(
+                {"status": "success", "data": node_data, "meta": {"processTimeMS": 123}}
+            ), 200
 
         @self.app.route("/api/v1/generate/sentences", methods=["POST"])
         def fetch_sentences():
@@ -234,20 +233,26 @@ class App:
             input_text = request_body.get("input_text")
 
             if self.mode == "test_mode":
-                english_text = chinese_text = hokkien_text = "this output is a test output"
+                english_text = chinese_text = hokkien_text = (
+                    "this output is a test output"
+                )
             else:
-                english_text = chinese_text = hokkien_text = "calls model api for translation"
-            
-            return jsonify({
-                "status": "success",
-                "data": {
-                    "input_text": input_text,
-                    "english_text": english_text,
-                    "chinese_text": chinese_text,
-                    "hokkien_text": hokkien_text
-                },
-                "meta": {"processTimeMS": 123}
-            }), 200
+                english_text = chinese_text = hokkien_text = (
+                    "calls model api for translation"
+                )
+
+            return jsonify(
+                {
+                    "status": "success",
+                    "data": {
+                        "input_text": input_text,
+                        "english_text": english_text,
+                        "chinese_text": chinese_text,
+                        "hokkien_text": hokkien_text,
+                    },
+                    "meta": {"processTimeMS": 123},
+                }
+            ), 200
 
         @self.app.route("/api/v1/generate/translation", methods=["POST"])
         def fetch_translation():
@@ -257,20 +262,26 @@ class App:
             model_parameters = request_body.get("parameters")
             input_text = request_body.get("input_text")
 
-            model_out = "this output is a test output" if self.mode == "test_mode" else "calls model api for translation"
-            
-            return jsonify({
-                "status": "success",
-                "data": {
-                    "source_lang": source_lang,
-                    "output_lang": output_lang,
-                    "parameters": model_parameters,
-                    "input_text": input_text,
-                    "translated_text": model_out
-                },
-                "meta": {"processTimeMS": 123}
-            }), 200
-        
+            model_out = (
+                "this output is a test output"
+                if self.mode == "test_mode"
+                else "calls model api for translation"
+            )
+
+            return jsonify(
+                {
+                    "status": "success",
+                    "data": {
+                        "source_lang": source_lang,
+                        "output_lang": output_lang,
+                        "parameters": model_parameters,
+                        "input_text": input_text,
+                        "translated_text": model_out,
+                    },
+                    "meta": {"processTimeMS": 123},
+                }
+            ), 200
+
         @self.app.route("/api/v1/generate/romanizer", methods=["POST"])
         def fetch_romanizer():
             request_body = request.get_json()
@@ -278,18 +289,24 @@ class App:
             output_lang = request_body.get("output_lang")
             input_text = request_body.get("input_text")
 
-            romanized_text = "this output is a test output" if self.mode == "test_mode" else "calls model api for romanization"
+            romanized_text = (
+                "this output is a test output"
+                if self.mode == "test_mode"
+                else "calls model api for romanization"
+            )
 
-            return jsonify({
-                "status": "success",
-                "data": {
-                    "source_lang": source_lang,
-                    "output_lang": output_lang,
-                    "input_text": input_text,
-                    "romanized_text": romanized_text
-                },
-                "meta": {"processTimeMS": 123}
-            }), 200
+            return jsonify(
+                {
+                    "status": "success",
+                    "data": {
+                        "source_lang": source_lang,
+                        "output_lang": output_lang,
+                        "input_text": input_text,
+                        "romanized_text": romanized_text,
+                    },
+                    "meta": {"processTimeMS": 123},
+                }
+            ), 200
 
         # might not be used
         @self.app.route("/api/v1/generate/image", methods=["POST"])
@@ -301,22 +318,28 @@ class App:
             n_steps = request_body.get("n_steps")
             high_noise_frac = request_body.get("high_noise_frac")
             base64_string = request_body.get("base64_string")
-            
-            generate_image = "this output is a test output" if self.mode == "test_mode" else "calls model api for image generation"
 
-            return jsonify({
-                "status": "success",
-                "data": {
-                    "input_text": input_text,
-                    "negative_prompt": negative_prompt,
-                    "negative_prompt_style": negative_prompt_style,
-                    "n_steps": n_steps,
-                    "high_noise_frac": high_noise_frac,
-                    "base64_string": base64_string,
-                    "generate_image": generate_image
-                },
-                "meta": {"process_time_ms": 123}
-            }), 200
+            generate_image = (
+                "this output is a test output"
+                if self.mode == "test_mode"
+                else "calls model api for image generation"
+            )
+
+            return jsonify(
+                {
+                    "status": "success",
+                    "data": {
+                        "input_text": input_text,
+                        "negative_prompt": negative_prompt,
+                        "negative_prompt_style": negative_prompt_style,
+                        "n_steps": n_steps,
+                        "high_noise_frac": high_noise_frac,
+                        "base64_string": base64_string,
+                        "generate_image": generate_image,
+                    },
+                    "meta": {"process_time_ms": 123},
+                }
+            ), 200
 
         @self.app.route("/api/v1/generate/numeric-tones", methods=["POST"])
         def fetch_numeric_tones():
@@ -325,19 +348,25 @@ class App:
             source_lang = request_body.get("source_lang")
             output_lang = request_body.get("output_lang")
 
-            numeric_tones = "this output is a test output" if self.mode == "test_mode" else "calls model api for numeric tones"
+            numeric_tones = (
+                "this output is a test output"
+                if self.mode == "test_mode"
+                else "calls model api for numeric tones"
+            )
 
-            return jsonify({
-                "status": "success",
-                "data": {
-                    "source_lang": source_lang,
-                    "output_lang": output_lang,
-                    "input_text": input_text,
-                    "numeric_tones": numeric_tones
-                },
-                "meta": {"process_time_ms": 123}
-            }), 200
-        
+            return jsonify(
+                {
+                    "status": "success",
+                    "data": {
+                        "source_lang": source_lang,
+                        "output_lang": output_lang,
+                        "input_text": input_text,
+                        "numeric_tones": numeric_tones,
+                    },
+                    "meta": {"process_time_ms": 123},
+                }
+            ), 200
+
         @self.app.route("/api/v1/generate/audio-url", methods=["POST"])
         def fetch_audio_url():
             request_body = request.get_json()
@@ -345,18 +374,22 @@ class App:
             source_lang = request_body.get("source_lang")
             output_lang = request_body.get("output_lang")
 
-            audio_url = "this output is a test output" if self.mode == "test_mode" else "aaaa"
+            audio_url = (
+                "this output is a test output" if self.mode == "test_mode" else "aaaa"
+            )
 
-            return jsonify({
-                "status": "success",
-                "data": {
-                    "source_lang": source_lang,
-                    "output_lang": output_lang,
-                    "input_text": input_text,
-                    "audio_url": audio_url
-                },
-                "meta": {"process_time_ms": 123}
-            }), 200
+            return jsonify(
+                {
+                    "status": "success",
+                    "data": {
+                        "source_lang": source_lang,
+                        "output_lang": output_lang,
+                        "input_text": input_text,
+                        "audio_url": audio_url,
+                    },
+                    "meta": {"process_time_ms": 123},
+                }
+            ), 200
 
         @self.app.route("/api/v1/generate/audio-blob", methods=["POST"])
         def fetch_audio_blob():
@@ -365,95 +398,106 @@ class App:
             source_lang = request_body.get("source_lang")
             output_lang = request_body.get("output_lang")
 
-            audio_blob = "this output is a test output" if self.mode == "test_mode" else "aaaa"
+            audio_blob = (
+                "this output is a test output" if self.mode == "test_mode" else "aaaa"
+            )
 
-            return jsonify({
-                "status": "success",
-                "data": {
-                    "source_lang": source_lang,
-                    "output_lang": output_lang,
-                    "input_text": input_text,
-                    "audio_blob": audio_blob
-                },
-                "meta": {"process_time_ms": 123}
-            }), 200
-        
+            return jsonify(
+                {
+                    "status": "success",
+                    "data": {
+                        "source_lang": source_lang,
+                        "output_lang": output_lang,
+                        "input_text": input_text,
+                        "audio_blob": audio_blob,
+                    },
+                    "meta": {"process_time_ms": 123},
+                }
+            ), 200
+
         @self.app.route("/cat-fact")
         def get_cat_fact():
-            return jsonify({
-                "status": "success",
-                "data": {
-                    "cat_fact": "Adult cats rarely meow at each other; they developed this sound specifically to communicate with humans."
-                },
-                "meta": {"processTimeMS": 123}
-            }), 200
-        
+            return jsonify(
+                {
+                    "status": "success",
+                    "data": {
+                        "cat_fact": "Adult cats rarely meow at each other; they developed this sound specifically to communicate with humans."
+                    },
+                    "meta": {"processTimeMS": 123},
+                }
+            ), 200
+
         @self.app.route("/audio-test")
         def get_audio_test():
-            audio_test_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'audio-clips', 'test_audio.mp3')
-            with open(audio_test_path, 'rb') as f:
-                encoded_string = base64.b64encode(f.read()).decode('utf-8')
+            audio_test_path = os.path.join(
+                os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+                "audio-clips",
+                "test_audio.mp3",
+            )
+            with open(audio_test_path, "rb") as f:
+                encoded_string = base64.b64encode(f.read()).decode("utf-8")
 
-            return jsonify({
-                "status": "success",
-                "data": {
-                    "audio_clip": encoded_string
-                },
-                "meta": {"processTimeMS": 123}
-            }), 200
+            return jsonify(
+                {
+                    "status": "success",
+                    "data": {"audio_clip": encoded_string},
+                    "meta": {"processTimeMS": 123},
+                }
+            ), 200
 
-        #minigame api endpoints
+        # minigame api endpoints
         @self.app.route("/api/v1/challenges", methods=["GET"])
         def get_challenges():
             """Returns lightweight list of all available challenges."""
             challenges = self.challenge_manager.get_all_challenges()
-            return jsonify({
-                "status": "success",
-                "data": challenges,
-                "meta": {"processTimeMS": 123}
-            }), 200
-        
+            return jsonify(
+                {
+                    "status": "success",
+                    "data": challenges,
+                    "meta": {"processTimeMS": 123},
+                }
+            ), 200
+
         @self.app.route("/api/v1/challenges/<challenge_id>", methods=["GET"])
         def get_challenge(challenge_id):
             """Returns full details and requirements for a specific challenge."""
             challenge = self.challenge_manager.get_challenge(challenge_id)
             if not challenge:
-                return jsonify({
-                    "status": "error",
-                    "message": "Challenge not found: %s" % challenge_id
-                }), 404
-            return jsonify({
-                "status": "success",
-                "data": challenge,
-                "meta": {"processTimeMS": 123}
-            }), 200
-        
+                return jsonify(
+                    {
+                        "status": "error",
+                        "message": "Challenge not found: %s" % challenge_id,
+                    }
+                ), 404
+            return jsonify(
+                {"status": "success", "data": challenge, "meta": {"processTimeMS": 123}}
+            ), 200
+
         @self.app.route("/api/v1/challenges/accept", methods=["POST"])
         def accept_challenge():
             """Accepts a challenge for a user. Only one active challenge at a time."""
             body = request.get_json()
             user_id = body.get("user_id")
             challenge_id = body.get("challenge_id")
- 
+
             if not user_id or not challenge_id:
-                return jsonify({
-                    "status": "error",
-                    "message": "user_id and challenge_id are required"
-                }), 400
-            
-            result, error = self.challenge_manager.accept_challenge(user_id, challenge_id)
+                return jsonify(
+                    {
+                        "status": "error",
+                        "message": "user_id and challenge_id are required",
+                    }
+                ), 400
+
+            result, error = self.challenge_manager.accept_challenge(
+                user_id, challenge_id
+            )
             if error:
-                return jsonify({
-                    "status": "error",
-                    "message": error
-                }), 400
- 
-            return jsonify({
-                "status": "success",
-                "data": result,
-                "meta": {"processTimeMS": 123}
-            }), 200
-        
+                return jsonify({"status": "error", "message": error}), 400
+
+            return jsonify(
+                {"status": "success", "data": result, "meta": {"processTimeMS": 123}}
+            ), 200
+
         @self.app.route("/api/v1/challenges/inventory", methods=["POST"])
         def add_to_inventory():
             """Adds an item to the user's inventory. Triggered by ADD_TO_INVENTORY event."""
@@ -461,26 +505,22 @@ class App:
             user_id = body.get("user_id")
             item_id = body.get("item_id")
             challenge_id = body.get("challenge_id")
- 
+
             if not user_id or not item_id:
-                return jsonify({
-                    "status": "error",
-                    "message": "user_id and item_id are required"
-                }), 400
- 
-            result, error = self.challenge_manager.add_to_inventory(user_id, item_id, challenge_id)
+                return jsonify(
+                    {"status": "error", "message": "user_id and item_id are required"}
+                ), 400
+
+            result, error = self.challenge_manager.add_to_inventory(
+                user_id, item_id, challenge_id
+            )
             if error:
-                return jsonify({
-                    "status": "error",
-                    "message": error
-                }), 400
- 
-            return jsonify({
-                "status": "success",
-                "data": result,
-                "meta": {"processTimeMS": 123}
-            }), 200
-        
+                return jsonify({"status": "error", "message": error}), 400
+
+            return jsonify(
+                {"status": "success", "data": result, "meta": {"processTimeMS": 123}}
+            ), 200
+
         @self.app.route("/api/v1/user/<user_id>/inventory", methods=["GET"])
         def get_user_inventory(user_id):
             """Returns user's full inventory and active challenge. Called on login to restore session."""
@@ -488,22 +528,25 @@ class App:
 
             # Temporary mock fallback: return hard-coded inventory when no DB data exists.
             no_db_data = (
-                inventory.get("active_challenge_id") is None and
-                len(inventory.get("inventory", [])) == 0
+                inventory.get("active_challenge_id") is None
+                and len(inventory.get("inventory", [])) == 0
             )
             if no_db_data:
-                inventory = MOCK_USER_INVENTORY.get(user_id, {
-                    "user_id": user_id,
-                    "active_challenge_id": DEFAULT_MOCK_INVENTORY["active_challenge_id"],
-                    "inventory": DEFAULT_MOCK_INVENTORY["inventory"]
-                })
+                inventory = MOCK_USER_INVENTORY.get(
+                    user_id,
+                    {
+                        "user_id": user_id,
+                        "active_challenge_id": DEFAULT_MOCK_INVENTORY[
+                            "active_challenge_id"
+                        ],
+                        "inventory": DEFAULT_MOCK_INVENTORY["inventory"],
+                    },
+                )
 
-            return jsonify({
-                "status": "success",
-                "data": inventory,
-                "meta": {"processTimeMS": 123}
-            }), 200
- 
+            return jsonify(
+                {"status": "success", "data": inventory, "meta": {"processTimeMS": 123}}
+            ), 200
+
         @self.app.route("/api/v1/challenges/verify", methods=["POST"])
         def verify_challenge():
             """Verifies challenge completion. Run when ADD_TO_INVENTORY event fires."""
@@ -511,25 +554,30 @@ class App:
             user_id = body.get("user_id")
             challenge_id = body.get("challenge_id")
             final_order = body.get("final_order")
-  
+
             if not user_id or not challenge_id or final_order is None:
-                return jsonify({
-                    "status": "error",
-                    "message": "user_id, challenge_id and final_order are required"
-                }), 400
-  
+                return jsonify(
+                    {
+                        "status": "error",
+                        "message": "user_id, challenge_id and final_order are required",
+                    }
+                ), 400
+
             is_success, reason = self.challenge_manager.verify_challenge(
-                user_id, challenge_id, final_order)
-  
-            return jsonify({
-                "status": "success",
-                "data": {
-                    "is_success": is_success,
-                    "challenge_id": challenge_id,
-                    "reason": reason
-                },
-                "meta": {"processTimeMS": 123}
-            }), 200
+                user_id, challenge_id, final_order
+            )
+
+            return jsonify(
+                {
+                    "status": "success",
+                    "data": {
+                        "is_success": is_success,
+                        "challenge_id": challenge_id,
+                        "reason": reason,
+                    },
+                    "meta": {"processTimeMS": 123},
+                }
+            ), 200
 
         admin_dir = os.path.join(os.path.dirname(__file__), "admin", "static")
 
@@ -541,19 +589,26 @@ class App:
         def admin_static(filename):
             return send_from_directory(admin_dir, filename)
 
-        @self.app.route('/audio-clips/<path:filename>')
+        @self.app.route("/audio-clips/<path:filename>")
         def serve_audio(filename):
-            audio_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'audio-clips')
-            print(f"[AUDIO] Serving from: {audio_dir}/{filename} | exists: {os.path.exists(os.path.join(audio_dir, filename))}")
-            return send_from_directory(audio_dir, filename, mimetype='audio/wav')
+            audio_dir = os.path.join(
+                os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+                "audio-clips",
+            )
+            print(
+                f"[AUDIO] Serving from: {audio_dir}/{filename} | exists: {os.path.exists(os.path.join(audio_dir, filename))}"
+            )
+            return send_from_directory(audio_dir, filename, mimetype="audio/wav")
 
         @self.app.route("/api/admin/npcs", methods=["GET"])
         def admin_get_npcs():
             npcs = self.dialogue_manager.get_all_npcs()
-            return jsonify({
-                "status": "success",
-                "data": [{"npc_id": n[0], "npc_name": n[1]} for n in npcs]
-            }), 200
+            return jsonify(
+                {
+                    "status": "success",
+                    "data": [{"npc_id": n[0], "npc_name": n[1]} for n in npcs],
+                }
+            ), 200
 
         @self.app.route("/api/admin/npcs", methods=["POST"])
         def admin_create_npc():
@@ -561,7 +616,9 @@ class App:
             npc_id = body.get("npc_id")
             npc_name = body.get("npc_name")
             if not npc_id or not npc_name:
-                return jsonify({"status": "error", "message": "npc_id and npc_name required"}), 400
+                return jsonify(
+                    {"status": "error", "message": "npc_id and npc_name required"}
+                ), 400
             result = self.dialogue_manager.create_npc(npc_id, npc_name)
             return jsonify({"status": "success", "data": result}), 201
 
@@ -596,12 +653,28 @@ class App:
                     if audio_path and os.path.exists(audio_path):
                         with open(audio_path, "rb") as f:
                             audio_binary = base64.b64encode(f.read()).decode("utf-8")
-                    audio_src = { "audio_path": audio_path, "audio_binary": audio_binary }
-                    dialogues[node[0]] = {"dialogue_id": d[0][1], "dialogue": d[0][2], "translation_HAN": d[0][3], "translation_POJ": d[0][4], "audio_src": audio_src }
-            return jsonify({
-                "status": "success",
-                "data": [{"node_id": n[0], "parent_node_id": n[1], "npc_id": n[2], "dialogue": dialogues.get(n[0])} for n in nodes]
-            }), 200
+                    audio_src = {"audio_path": audio_path, "audio_binary": audio_binary}
+                    dialogues[node[0]] = {
+                        "dialogue_id": d[0][1],
+                        "dialogue": d[0][2],
+                        "translation_HAN": d[0][3],
+                        "translation_POJ": d[0][4],
+                        "audio_src": audio_src,
+                    }
+            return jsonify(
+                {
+                    "status": "success",
+                    "data": [
+                        {
+                            "node_id": n[0],
+                            "parent_node_id": n[1],
+                            "npc_id": n[2],
+                            "dialogue": dialogues.get(n[0]),
+                        }
+                        for n in nodes
+                    ],
+                }
+            ), 200
 
         @self.app.route("/api/admin/dialogue-nodes", methods=["POST"])
         def admin_create_node():
@@ -610,10 +683,17 @@ class App:
             parent_node_id = body.get("parent_node_id")
             npc_id = body.get("npc_id")
             if not node_id or not parent_node_id or not npc_id:
-                return jsonify({"status": "error", "message": "node_id, parent_node_id, npc_id required"}), 400
+                return jsonify(
+                    {
+                        "status": "error",
+                        "message": "node_id, parent_node_id, npc_id required",
+                    }
+                ), 400
             result = self.dialogue_manager.create_node(node_id, parent_node_id, npc_id)
             dialogue_id = f"d_{node_id}"
-            self.dialogue_manager.create_dialogue(node_id, dialogue_id, "", "", "", npc_id)
+            self.dialogue_manager.create_dialogue(
+                node_id, dialogue_id, "", "", "", npc_id
+            )
             return jsonify({"status": "success", "data": result}), 201
 
         @self.app.route("/api/admin/dialogue-nodes/<node_id>", methods=["PUT"])
@@ -621,7 +701,9 @@ class App:
             body = request.get_json()
             parent_node_id = body.get("parent_node_id")
             if not parent_node_id:
-                return jsonify({"status": "error", "message": "parent_node_id required"}), 400
+                return jsonify(
+                    {"status": "error", "message": "parent_node_id required"}
+                ), 400
             result = self.dialogue_manager.update_node(node_id, parent_node_id)
             return jsonify({"status": "success", "data": result}), 200
 
@@ -636,11 +718,23 @@ class App:
         def admin_get_dialogue(node_id):
             d = self.dialogue_manager.get_dialogue(node_id)
             if not d:
-                return jsonify({"status": "error", "message": "Dialogue not found"}), 404
-            return jsonify({
-                "status": "success",
-                "data": {"node_id": d[0][0], "dialogue_id": d[0][1], "dialogue": d[0][2], "translation_HAN": d[0][3], "translation_POJ": d[0][4], "audio_src": d[0][5], "npc_id": d[0][6]}
-            }), 200
+                return jsonify(
+                    {"status": "error", "message": "Dialogue not found"}
+                ), 404
+            return jsonify(
+                {
+                    "status": "success",
+                    "data": {
+                        "node_id": d[0][0],
+                        "dialogue_id": d[0][1],
+                        "dialogue": d[0][2],
+                        "translation_HAN": d[0][3],
+                        "translation_POJ": d[0][4],
+                        "audio_src": d[0][5],
+                        "npc_id": d[0][6],
+                    },
+                }
+            ), 200
 
         @self.app.route("/api/admin/dialogues/<node_id>", methods=["PUT"])
         def admin_update_dialogue(node_id):
@@ -651,16 +745,28 @@ class App:
 
             if dialogue_text is None:
                 return jsonify({"status": "error", "message": "dialogue required"}), 400
-            result = self.dialogue_manager.update_dialogue(node_id, dialogue_text, translation_HAN, translation_POJ, "" or "")
+            result = self.dialogue_manager.update_dialogue(
+                node_id, dialogue_text, translation_HAN, translation_POJ, "" or ""
+            )
             return jsonify({"status": "success", "data": result}), 200
 
         @self.app.route("/api/admin/options/<node_id>", methods=["GET"])
         def admin_get_options(node_id):
             options = self.dialogue_manager.get_options_for_node(node_id)
-            return jsonify({
-                "status": "success",
-                "data": [{"option_id": o[1], "option_text": o[2], "next_node_id": o[3], "feedback_type": o[4]} for o in options]
-            }), 200
+            return jsonify(
+                {
+                    "status": "success",
+                    "data": [
+                        {
+                            "option_id": o[1],
+                            "option_text": o[2],
+                            "next_node_id": o[3],
+                            "feedback_type": o[4],
+                        }
+                        for o in options
+                    ],
+                }
+            ), 200
 
         @self.app.route("/api/admin/options/<node_id>", methods=["POST"])
         def admin_create_option(node_id):
@@ -670,8 +776,12 @@ class App:
             next_node_id = body.get("next_node_id", "")
             feedback_type = body.get("feedback_type", "neutral")
             if not option_id:
-                return jsonify({"status": "error", "message": "option_id required"}), 400
-            result = self.dialogue_manager.create_option(node_id, option_id, option_text, next_node_id, feedback_type)
+                return jsonify(
+                    {"status": "error", "message": "option_id required"}
+                ), 400
+            result = self.dialogue_manager.create_option(
+                node_id, option_id, option_text, next_node_id, feedback_type
+            )
             return jsonify({"status": "success", "data": result}), 201
 
         @self.app.route("/api/admin/options/<option_id>", methods=["PUT"])
@@ -681,8 +791,15 @@ class App:
             next_node_id = body.get("next_node_id", "")
             feedback_type = body.get("feedback_type")
             if not option_text and not next_node_id:
-                return jsonify({"status": "error", "message": "option_text or next_node_id required"}), 400
-            result = self.dialogue_manager.update_option(option_id, option_text, next_node_id, feedback_type or "neutral")
+                return jsonify(
+                    {
+                        "status": "error",
+                        "message": "option_text or next_node_id required",
+                    }
+                ), 400
+            result = self.dialogue_manager.update_option(
+                option_id, option_text, next_node_id, feedback_type or "neutral"
+            )
             return jsonify({"status": "success", "data": result}), 200
 
         @self.app.route("/api/admin/options/<option_id>", methods=["DELETE"])
@@ -696,13 +813,15 @@ class App:
             result = []
             for v in vendors:
                 items = self.vendor_manager.get_items(v[0])
-                result.append({
-                    "vendor_id": v[0],
-                    "node_id": v[1],
-                    "npc_id": v[2],
-                    "vendor_name": v[3],
-                    "item_count": len(items)
-                })
+                result.append(
+                    {
+                        "vendor_id": v[0],
+                        "node_id": v[1],
+                        "npc_id": v[2],
+                        "vendor_name": v[3],
+                        "item_count": len(items),
+                    }
+                )
             return jsonify({"status": "success", "data": result}), 200
 
         @self.app.route("/api/admin/vendors", methods=["POST"])
@@ -713,8 +832,15 @@ class App:
             npc_id = body.get("npc_id")
             vendor_name = body.get("vendor_name")
             if not all([vendor_id, node_id, npc_id, vendor_name]):
-                return jsonify({"status": "error", "message": "vendor_id, node_id, npc_id, vendor_name required"}), 400
-            result = self.vendor_manager.create_vendor(vendor_id, node_id, npc_id, vendor_name)
+                return jsonify(
+                    {
+                        "status": "error",
+                        "message": "vendor_id, node_id, npc_id, vendor_name required",
+                    }
+                ), 400
+            result = self.vendor_manager.create_vendor(
+                vendor_id, node_id, npc_id, vendor_name
+            )
             return jsonify({"status": "success", "data": result}), 201
 
         @self.app.route("/api/admin/vendors/<vendor_id>", methods=["PUT"])
@@ -722,7 +848,9 @@ class App:
             body = request.get_json()
             vendor_name = body.get("vendor_name")
             if not vendor_name:
-                return jsonify({"status": "error", "message": "vendor_name required"}), 400
+                return jsonify(
+                    {"status": "error", "message": "vendor_name required"}
+                ), 400
             result = self.vendor_manager.update_vendor(vendor_id, vendor_name)
             return jsonify({"status": "success", "data": result}), 200
 
@@ -736,10 +864,21 @@ class App:
         @self.app.route("/api/admin/items/<vendor_id>", methods=["GET"])
         def admin_get_items(vendor_id):
             items = self.vendor_manager.get_items(vendor_id)
-            return jsonify({
-                "status": "success",
-                "data": [{"vendor_id": i[0], "item_id": i[1], "item_name": i[2], "item_description": i[3], "item_value": i[4]} for i in items]
-            }), 200
+            return jsonify(
+                {
+                    "status": "success",
+                    "data": [
+                        {
+                            "vendor_id": i[0],
+                            "item_id": i[1],
+                            "item_name": i[2],
+                            "item_description": i[3],
+                            "item_value": i[4],
+                        }
+                        for i in items
+                    ],
+                }
+            ), 200
 
         @self.app.route("/api/admin/items/<vendor_id>", methods=["POST"])
         def admin_create_item(vendor_id):
@@ -749,8 +888,12 @@ class App:
             item_description = body.get("item_description", "")
             item_value = body.get("item_value", 0)
             if not item_id or not item_name:
-                return jsonify({"status": "error", "message": "item_id and item_name required"}), 400
-            result = self.vendor_manager.create_item(vendor_id, item_id, item_name, item_description, item_value)
+                return jsonify(
+                    {"status": "error", "message": "item_id and item_name required"}
+                ), 400
+            result = self.vendor_manager.create_item(
+                vendor_id, item_id, item_name, item_description, item_value
+            )
             return jsonify({"status": "success", "data": result}), 201
 
         @self.app.route("/api/admin/items/<item_id>", methods=["PUT"])
@@ -760,8 +903,12 @@ class App:
             item_description = body.get("item_description")
             item_value = body.get("item_value")
             if not item_name:
-                return jsonify({"status": "error", "message": "item_name required"}), 400
-            result = self.vendor_manager.update_item(item_id, item_name, item_description or "", item_value or 0)
+                return jsonify(
+                    {"status": "error", "message": "item_name required"}
+                ), 400
+            result = self.vendor_manager.update_item(
+                item_id, item_name, item_description or "", item_value or 0
+            )
             return jsonify({"status": "success", "data": result}), 200
 
         @self.app.route("/api/admin/items/<item_id>", methods=["DELETE"])
@@ -772,7 +919,9 @@ class App:
         @self.app.route("/api/admin/model/translate/<node_id>", methods=["POST"])
         def admin_model_generate_translate(node_id):
             if not self.hokTranslation:
-                return jsonify({"status": "error", "message": "Translation model not available"}), 503
+                return jsonify(
+                    {"status": "error", "message": "Translation model not available"}
+                ), 503
             body = request.get_json()
             output_lang = body.get("output_lang")
             dialogue_text = body.get("input_text")
@@ -780,23 +929,33 @@ class App:
             dialogue = self.dialogue_manager.get_dialogue(node_id)
             translation_HAN = dialogue[0][3]
             translation_POJ = dialogue[0][4]
-            if output_lang == 'POJ':
+            if output_lang == "POJ":
                 translation_POJ = translation
             else:
                 translation_HAN = translation
 
-            result = self.dialogue_manager.update_dialogue(node_id, dialogue[0][2], translation_HAN, translation_POJ, dialogue[0][5] or "")
+            result = self.dialogue_manager.update_dialogue(
+                node_id,
+                dialogue[0][2],
+                translation_HAN,
+                translation_POJ,
+                dialogue[0][5] or "",
+            )
             return jsonify({"status": "success", "data": result}), 200
 
         @self.app.route("/api/admin/model/tts/<node_id>", methods=["POST"])
         def admin_model_generate_tts(node_id):
             if not self.hokTTS:
-                return jsonify({"status": "error", "message": "TTS model not available"}), 503
+                return jsonify(
+                    {"status": "error", "message": "TTS model not available"}
+                ), 503
             body = request.get_json()
             translation = body.get("translation_text")
             audio_src = self.hokTTS.generate_tts(node_id, translation)
             dialogue = self.dialogue_manager.get_dialogue(node_id)
-            result = self.dialogue_manager.update_dialogue(node_id, dialogue[0][2], dialogue[0][3], dialogue[0][4], audio_src or "")
+            result = self.dialogue_manager.update_dialogue(
+                node_id, dialogue[0][2], dialogue[0][3], dialogue[0][4], audio_src or ""
+            )
             return jsonify({"status": "success", "data": result}), 200
 
         @self.app.route("/health")
@@ -809,7 +968,11 @@ class App:
 
 def create_deploy_app():
     """Create app for production deployment (Gunicorn)"""
-    deploy_app = App(mode=2, skip_models=True)
+    import os
+
+    DATABASE_URL = os.environ.get("DATABASE_URL")
+    mode = "production" if DATABASE_URL else 2
+    deploy_app = App(mode=mode, skip_models=True)
     deploy_app.create_app()
     deploy_app.create_endpoints()
     return deploy_app.app
@@ -825,29 +988,34 @@ else:
 
 if __name__ == "__main__":
     import os
+
     skip_models = os.environ.get("SKIP_MODELS", "").lower() in ("1", "true", "yes")
+    DATABASE_URL = os.environ.get("DATABASE_URL")
 
     if os.environ.get("RUN_MODE") == "production":
-        # Gunicorn will import this module and use the `app` variable
-        # No action needed - app is already created above
         pass
     else:
-        # Local development with mode selection
         print("\n=== Local Development Mode ===")
         print("Options:")
         print("  0 - Default mode (with ML models)")
         print("  1 - Test mode (with ML models)")
         print("  2 - Lesson mode (with ML models)")
-        print("  3 - Skip ML models (faster startup)")
-        print("  4 - Skip ML models + test mode")
-        print("  5 - Skip ML models + lesson mode")
+        if DATABASE_URL:
+            print("  3 - Production mode (Supabase, with ML models)")
+        else:
+            print("  3 - Lesson mode (SQLite, with ML models)")
+        print("  4 - Skip ML models (faster startup)")
+        print("  5 - Skip ML models + test mode")
+        if DATABASE_URL:
+            print("  6 - Skip ML models + production (Supabase)")
+        else:
+            print("  6 - Skip ML models + lesson mode")
 
-        mode_input = input("\nSelect mode [0-5]: ").strip()
+        mode_input = input("\nSelect mode [0-6]: ").strip()
 
-        # Handle skip models modes
-        if mode_input in ("3", "4", "5"):
+        if mode_input in ("4", "5", "6"):
             skip_models = True
-            mode = int(mode_input) - 3  # 3->0, 4->1, 5->2
+            mode = int(mode_input) - 3
         else:
             mode = int(mode_input) if mode_input else 2
 
