@@ -20,14 +20,12 @@ class Hok_DB:
     
     def get_name(self, mode):
         match mode:
-            case 0:
-                return "hok_data"
-            case 1:
+            case 1 | "test":
                 return "hok_test_data"
-            case 2:
+            case 2 | "production" | "lesson":
                 return "hok_lesson_data"
             case _:
-                raise Exception("Error, mode selected is invalid.") 
+                raise Exception(f"Error, mode '{mode}' selected is invalid.") 
 
     # temp function used for creating initial db, should not be used at all in prod
     def create_tables(self):

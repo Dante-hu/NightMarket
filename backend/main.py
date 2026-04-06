@@ -989,37 +989,22 @@ else:
 if __name__ == "__main__":
     import os
 
+    # 1. Database Selector
+    print("\n=== NightMarket Local Development ===")
+    print("  1 - Test DB       (hok_test_data.db)")
+    print("  2 - Production DB (hok_lesson_data.db)")
+    
+    mode_input = input("\nSelect DB [1, 2, default=1]: ").strip()
+    mode = 2 if mode_input == "2" else 1
+
+    # 2. ML Models Selector
     skip_models = os.environ.get("SKIP_MODELS", "").lower() in ("1", "true", "yes")
-    DATABASE_URL = os.environ.get("DATABASE_URL")
-
-    if os.environ.get("RUN_MODE") == "production":
-        pass
-    else:
-        print("\n=== Local Development Mode ===")
-        print("Options:")
-        print("  0 - Default mode (with ML models)")
-        print("  1 - Test mode (with ML models)")
-        print("  2 - Lesson mode (with ML models)")
-        if DATABASE_URL:
-            print("  3 - Production mode (Supabase, with ML models)")
-        else:
-            print("  3 - Lesson mode (SQLite, with ML models)")
-        print("  4 - Skip ML models (faster startup)")
-        print("  5 - Skip ML models + test mode")
-        if DATABASE_URL:
-            print("  6 - Skip ML models + production (Supabase)")
-        else:
-            print("  6 - Skip ML models + lesson mode")
-
-        mode_input = input("\nSelect mode [0-6]: ").strip()
-
-        if mode_input in ("4", "5", "6"):
+    if not skip_models:
+        skip_input = input("Skip ML models (faster startup)? [y/N, default=N]: ").strip().lower()
+        if skip_input in ("y", "yes", "1"):
             skip_models = True
-            mode = int(mode_input) - 3
-        else:
-            mode = int(mode_input) if mode_input else 2
 
-        local_app = App(mode, skip_models=skip_models)
-        local_app.create_app()
-        local_app.create_endpoints()
-        local_app.run_local()
+    local_app = App(mode, skip_models=skip_models)
+    local_app.create_app()
+    local_app.create_endpoints()
+    local_app.run_local()
