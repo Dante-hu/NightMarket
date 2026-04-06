@@ -430,7 +430,7 @@ class App:
         @self.app.route("/audio-test")
         def get_audio_test():
             audio_test_path = os.path.join(
-                os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+                os.path.dirname(os.path.abspath(__file__)),
                 "audio-clips",
                 "test_audio.mp3",
             )
@@ -592,7 +592,7 @@ class App:
         @self.app.route("/audio-clips/<path:filename>")
         def serve_audio(filename):
             audio_dir = os.path.join(
-                os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+                os.path.dirname(os.path.abspath(__file__)),
                 "audio-clips",
             )
             print(
