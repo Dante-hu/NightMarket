@@ -4,7 +4,7 @@ import torch
 import accelerate
 import re
 
-PROMPT_TEMPLATE = "[TRANS]\n{source_sentence}\n[/TRANS]\n[{target_language}]\n"
+import re
 
 
 class HokTranslation:
@@ -36,20 +36,21 @@ class HokTranslation:
 
     def translate(self, source_sentence: str, target_language: str) -> str:
         print(f"[TRANSLATE] Input: '{source_sentence}' -> target: {target_language}")
-        prompt = PROMPT_TEMPLATE.format(
-            source_sentence=source_sentence, target_language=target_language
-        )
+        prompt = f"{self.tokenizer.bos_token}[TRANS]\n{source_sentence}\n[/TRANS]\n[{target_language}]\n"
         print(f"[TRANSLATE] Prompt: {repr(prompt)}")
         out = self.pipe(
             prompt,
             return_full_text=False,
             max_new_tokens=1024,
-            repetition_penalty=1.2,
-            no_repeat_ngram_size=4,
-            stop_sequence=["[ /"],
+            repetition_penalty=1.1,
+            do_sample=False,
         )[0]["generated_text"]
         print(f"[TRANSLATE] Raw: {out}")
-        text = out[: out.rfind("[ /")].strip()
+        end_idx = out.find("[/")
+        if end_idx == -1:
+            text = out.strip()
+        else:
+            text = out[:end_idx].strip()
         text = re.sub(r"\s*\[.*?[A-Z]+.*?\]", "", text).strip()
         text = self.decode(text)
         print(f"[TRANSLATE] Result: {text}")
