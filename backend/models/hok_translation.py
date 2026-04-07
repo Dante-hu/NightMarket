@@ -41,9 +41,8 @@ class HokTranslation:
         out = self.pipe(
             prompt,
             return_full_text=False,
-            max_new_tokens=1024,
+            max_new_tokens=256,
             repetition_penalty=1.1,
-            do_sample=False,
         )[0]["generated_text"]
         print(f"[TRANSLATE] Raw: {out}")
         end_idx = out.find("[/")
