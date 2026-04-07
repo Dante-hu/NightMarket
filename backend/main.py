@@ -650,8 +650,11 @@ class App:
                 if d:
                     audio_binary = ""
                     audio_path = d[0][5] if d[0][5] else ""
-                    if audio_path and os.path.exists(audio_path):
-                        with open(audio_path, "rb") as f:
+                    original_path = audio_path
+                    if audio_path and os.path.isabs(audio_path):
+                        audio_path = "/audio-clips/" + os.path.basename(audio_path)
+                    if original_path and os.path.exists(original_path):
+                        with open(original_path, "rb") as f:
                             audio_binary = base64.b64encode(f.read()).decode("utf-8")
                     audio_src = {"audio_path": audio_path, "audio_binary": audio_binary}
                     dialogues[node[0]] = {
@@ -993,14 +996,16 @@ if __name__ == "__main__":
     print("\n=== NightMarket Local Development ===")
     print("  1 - Test DB       (hok_test_data.db)")
     print("  2 - Production DB (hok_lesson_data.db)")
-    
+
     mode_input = input("\nSelect DB [1, 2, default=1]: ").strip()
     mode = 2 if mode_input == "2" else 1
 
     # 2. ML Models Selector
     skip_models = os.environ.get("SKIP_MODELS", "").lower() in ("1", "true", "yes")
     if not skip_models:
-        skip_input = input("Skip ML models (faster startup)? [y/N, default=N]: ").strip().lower()
+        skip_input = (
+            input("Skip ML models (faster startup)? [y/N, default=N]: ").strip().lower()
+        )
         if skip_input in ("y", "yes", "1"):
             skip_models = True
 
