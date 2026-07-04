@@ -37,7 +37,7 @@ Lesson 0 Dialogue Flow:
 import sqlite3
 import os
 
-# ── Config 
+# ── Config
 DB_PATH = os.path.join(
     os.path.dirname(os.path.abspath(__file__)),
     "database",
@@ -241,7 +241,7 @@ def populate_dialogues(cursor):
             "n_l0_pb_root", "d_l0_pb_001",
             "Excuse me, what is this?",
             "麻烦问一下这个是什么？",
-            "", "", "npc_passerby"
+            "audio-clips/n_l0_pb_root.wav", "npc_passerby"
         ),
 
         # Passerby answers
@@ -249,7 +249,7 @@ def populate_dialogues(cursor):
             "n_l0_pb_answer", "d_l0_pb_002",
             "This is pineapple cake.",
             "这是凤梨酥。",
-            "", "", "npc_passerby"
+            "audio-clips/n_l0_pb_answer", "npc_passerby"
         ),
 
         # Player asks where they bought it
@@ -257,7 +257,7 @@ def populate_dialogues(cursor):
             "n_l0_pb_where", "d_l0_pb_003",
             "Where did you buy it?",
             "请问你在哪里买的？",
-            "", "", "npc_passerby"
+            "audio-clips/n_l0_pb_where.wav", "npc_passerby"
         ),
 
         # Passerby points to the vendor
@@ -265,7 +265,7 @@ def populate_dialogues(cursor):
             "n_l0_pb_point", "d_l0_pb_004",
             "Over there at that stall!",
             "就在那边那个摊位！",
-            "", "", "npc_passerby"
+            "audio-clips/n_l0_pb_point.wav", "npc_passerby"
         ),
 
         # ── Pineapple Cake Vendor branch ──────────────────────────────────────
@@ -275,7 +275,7 @@ def populate_dialogues(cursor):
             "n_l0_v1_greet", "d_l0_v1_001",
             "Hello!",
             "老板好！",
-            "", "", "npc_pineapple_vendor"
+            "audio-clips/n_l0_v1_greet.wav", "npc_pineapple_vendor"
         ),
 
         # Player asks what it is
@@ -283,7 +283,7 @@ def populate_dialogues(cursor):
             "n_l0_v1_whatis", "d_l0_v1_002",
             "Excuse me, what is this?",
             "请问这是什么？",
-            "", "", "npc_pineapple_vendor"
+            "audio-clips/n_l0_v1_whatis.wav", "npc_pineapple_vendor"
         ),
 
         # Vendor explains
@@ -291,7 +291,7 @@ def populate_dialogues(cursor):
             "n_l0_v1_tryone", "d_l0_v1_003",
             "This is pineapple cake! Would you like to try one?",
             "这是凤梨酥！你要不要试吃看看？",
-            "", "", "npc_pineapple_vendor"
+            "audio-clips/n_l0_v1_tryone.wav", "npc_pineapple_vendor"
         ),
 
         # Player says yes
@@ -299,7 +299,7 @@ def populate_dialogues(cursor):
             "n_l0_v1_yes", "d_l0_v1_004",
             "Yes please!",
             "好啊！",
-            "", "", "npc_pineapple_vendor"
+            "audio-clips/n_l0_v1_yes.wav", "npc_pineapple_vendor"
         ),
 
         # Player says no — vendor urges them
@@ -307,7 +307,7 @@ def populate_dialogues(cursor):
             "n_l0_v1_no", "d_l0_v1_005",
             "You must try it! It is Taiwan's pride!",
             "你一定要试试看！台湾的骄傲！",
-            "", "", "npc_pineapple_vendor"
+            "audio-clips/n_l0_v1_no.wav", "npc_pineapple_vendor"
         ),
 
         # [4] Vendor asks how many
@@ -315,7 +315,7 @@ def populate_dialogues(cursor):
             "n_l0_v1_howmany", "d_l0_v1_006",
             "How many would you like?",
             "你要几个？",
-            "", "", "npc_pineapple_vendor"
+            "audio-clips/n_l0_v1_howmany.wav", "npc_pineapple_vendor"
         ),
 
         # Vendor gives the item
@@ -323,7 +323,7 @@ def populate_dialogues(cursor):
             "n_l0_v1_purchase", "d_l0_v1_007",
             "Here you go! Enjoy!",
             "来，请慢用！",
-            "", "", "npc_pineapple_vendor"
+            "audio-clips/n_l0_v1_purchase.wav", "npc_pineapple_vendor"
         ),
 
         # [5] Lesson complete narration (no NPC, narration box)
@@ -332,11 +332,11 @@ def populate_dialogues(cursor):
             "Lesson 0 Complete! You have successfully bought your first Taiwanese snack! "
             "Unlocked: Lesson 1 – Ordering Street Snacks.",
             "第零课完成！你成功买到了你的第一个台湾小吃！",
-            "", "", "npc_pineapple_vendor"
+            "audio-clips/n_l0_complete.wav", "npc_pineapple_vendor"
         ),
     ]
     cursor.executemany(
-        "INSERT OR IGNORE INTO dialogues VALUES (?,?,?,?,?,?,?)", dialogues)
+        "INSERT OR IGNORE INTO dialogues VALUES (?,?,?,?,?,?)", dialogues)
     print(f"   Inserted {len(dialogues)} dialogue lines")
 
 
@@ -352,11 +352,11 @@ def populate_words(cursor):
         ("d_l0_pb_001", "w_l0_001",
          "麻烦问一下", "Excuse me / May I ask",
          "Polite way to get someone's attention before asking a question",
-         ""),
+         "audio-clips/n_l0_v1_greet.wav"),
         ("d_l0_pb_001", "w_l0_002",
          "这个是什么", "What is this",
          "Used to ask about an unfamiliar object or food",
-         ""),
+         "audio-clips/n_l0_v1_whatis.wav"),
 
         # d_l0_pb_002 — 这是凤梨酥
         ("d_l0_pb_002", "w_l0_003",
@@ -372,31 +372,31 @@ def populate_words(cursor):
         ("d_l0_pb_003", "w_l0_005",
          "在哪里买", "Where to buy",
          "Used to ask about the location of a purchase",
-         ""),
+         "audio-clips/n_l0_pb_where.wav"),
 
         # d_l0_v1_001 — 老板好！
         ("d_l0_v1_001", "w_l0_006",
          "老板好", "Hello boss / Hello vendor (lāu-pán hó)",
          "Common greeting used when approaching a vendor or shop owner",
-         ""),
+         "audio-clips/n_l0_v1_greet.wav"),
 
         # d_l0_v1_002 — 请问这是什么？
         ("d_l0_v1_002", "w_l0_007",
          "请问这是什么", "Excuse me, what is this?",
          "Standard phrase for asking about an unfamiliar dish or item",
-         ""),
+         "audio-clips/n_l0_v1_whatis.wav"),
 
         # d_l0_v1_003 — 这是凤梨酥！你要不要试吃看看？
         ("d_l0_v1_003", "w_l0_008",
          "试吃", "Try eating / Taste test",
          "Vendors often offer free samples at night market stalls",
-         ""),
+         "audio-clips/n_l0_v1_tryone.wav"),
 
         # d_l0_v1_004 — 好啊！
         ("d_l0_v1_004", "w_l0_009",
          "好啊", "Yes / Sure / Okay",
          "Casual affirmative response",
-         ""),
+         "audio-clips/n_l0_v1_yes.wav"),
 
         # d_l0_v1_005 — 台湾的骄傲
         ("d_l0_v1_005", "w_l0_010",
@@ -408,7 +408,7 @@ def populate_words(cursor):
         ("d_l0_v1_006", "w_l0_011",
          "你要几个", "How many do you want?",
          "Used by vendors when asking for quantity",
-         ""),
+         "audio-clips/n_l0_v1_howmany.wav"),
 
         # d_l0_v1_007 — 来，请慢用！
         ("d_l0_v1_007", "w_l0_012",
