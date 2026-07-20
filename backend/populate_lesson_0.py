@@ -67,7 +67,8 @@ def create_tables(cursor):
             translation_HAN TEXT,
             translation_POJ TEXT,
             audio_clip TEXT,
-            npc_id TEXT
+            npc_id TEXT,
+            speaker TEXT
         )
     """)
     cursor.execute("""
@@ -241,7 +242,7 @@ def populate_dialogues(cursor):
             "n_l0_pb_root", "d_l0_pb_001",
             "Excuse me, what is this?",
             "麻烦问一下这个是什么？",
-            "audio-clips/n_l0_pb_root.wav", "npc_passerby"
+            "audio-clips/n_l0_pb_root.wav", "npc_passerby", "player"
         ),
 
         # Passerby answers
@@ -249,7 +250,7 @@ def populate_dialogues(cursor):
             "n_l0_pb_answer", "d_l0_pb_002",
             "This is pineapple cake.",
             "这是凤梨酥。",
-            "audio-clips/n_l0_pb_answer", "npc_passerby"
+            "audio-clips/n_l0_pb_answer", "npc_passerby", "npc_passerby"
         ),
 
         # Player asks where they bought it
@@ -257,7 +258,7 @@ def populate_dialogues(cursor):
             "n_l0_pb_where", "d_l0_pb_003",
             "Where did you buy it?",
             "请问你在哪里买的？",
-            "audio-clips/n_l0_pb_where.wav", "npc_passerby"
+            "audio-clips/n_l0_pb_where.wav", "npc_passerby", "player"
         ),
 
         # Passerby points to the vendor
@@ -265,7 +266,7 @@ def populate_dialogues(cursor):
             "n_l0_pb_point", "d_l0_pb_004",
             "Over there at that stall!",
             "就在那边那个摊位！",
-            "audio-clips/n_l0_pb_point.wav", "npc_passerby"
+            "audio-clips/n_l0_pb_point.wav", "npc_passerby", "npc_passerby"
         ),
 
         # ── Pineapple Cake Vendor branch ──────────────────────────────────────
@@ -275,7 +276,7 @@ def populate_dialogues(cursor):
             "n_l0_v1_greet", "d_l0_v1_001",
             "Hello!",
             "老板好！",
-            "audio-clips/n_l0_v1_greet.wav", "npc_pineapple_vendor"
+            "audio-clips/n_l0_v1_greet.wav", "npc_pineapple_vendor", "player"
         ),
 
         # Player asks what it is
@@ -283,7 +284,7 @@ def populate_dialogues(cursor):
             "n_l0_v1_whatis", "d_l0_v1_002",
             "Excuse me, what is this?",
             "请问这是什么？",
-            "audio-clips/n_l0_v1_whatis.wav", "npc_pineapple_vendor"
+            "audio-clips/n_l0_v1_whatis.wav", "npc_pineapple_vendor", "player"
         ),
 
         # Vendor explains
@@ -291,7 +292,7 @@ def populate_dialogues(cursor):
             "n_l0_v1_tryone", "d_l0_v1_003",
             "This is pineapple cake! Would you like to try one?",
             "这是凤梨酥！你要不要试吃看看？",
-            "audio-clips/n_l0_v1_tryone.wav", "npc_pineapple_vendor"
+            "audio-clips/n_l0_v1_tryone.wav", "npc_pineapple_vendor", "npc_pineapple_vendor"
         ),
 
         # Player says yes
@@ -299,7 +300,7 @@ def populate_dialogues(cursor):
             "n_l0_v1_yes", "d_l0_v1_004",
             "Yes please!",
             "好啊！",
-            "audio-clips/n_l0_v1_yes.wav", "npc_pineapple_vendor"
+            "audio-clips/n_l0_v1_yes.wav", "npc_pineapple_vendor", "player"
         ),
 
         # Player says no — vendor urges them
@@ -307,7 +308,7 @@ def populate_dialogues(cursor):
             "n_l0_v1_no", "d_l0_v1_005",
             "You must try it! It is Taiwan's pride!",
             "你一定要试试看！台湾的骄傲！",
-            "audio-clips/n_l0_v1_no.wav", "npc_pineapple_vendor"
+            "audio-clips/n_l0_v1_no.wav", "npc_pineapple_vendor", "npc_pineapple_vendor"
         ),
 
         # [4] Vendor asks how many
@@ -315,7 +316,7 @@ def populate_dialogues(cursor):
             "n_l0_v1_howmany", "d_l0_v1_006",
             "How many would you like?",
             "你要几个？",
-            "audio-clips/n_l0_v1_howmany.wav", "npc_pineapple_vendor"
+            "audio-clips/n_l0_v1_howmany.wav", "npc_pineapple_vendor", "npc_pineapple_vendor"
         ),
 
         # Vendor gives the item
@@ -323,7 +324,7 @@ def populate_dialogues(cursor):
             "n_l0_v1_purchase", "d_l0_v1_007",
             "Here you go! Enjoy!",
             "来，请慢用！",
-            "audio-clips/n_l0_v1_purchase.wav", "npc_pineapple_vendor"
+            "audio-clips/n_l0_v1_purchase.wav", "npc_pineapple_vendor", "npc_pineapple_vendor"
         ),
 
         # [5] Lesson complete narration (no NPC, narration box)
@@ -336,7 +337,7 @@ def populate_dialogues(cursor):
         ),
     ]
     cursor.executemany(
-        "INSERT OR IGNORE INTO dialogues VALUES (?,?,?,?,?,?)", dialogues)
+        "INSERT OR IGNORE INTO dialogues VALUES (?,?,?,?,?,?,?)", dialogues)
     print(f"   Inserted {len(dialogues)} dialogue lines")
 
 
