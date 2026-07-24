@@ -159,105 +159,108 @@ def populate_dialogues(cursor):
     dialogue   = English text
     translation = Hokkien/Chinese text
     """
+
+    # new field at the end indicates the name of the character speaking the dialogue,
+    # "player" is for lines said by the player character, and "npc_<npc name>" are for lines said by the npc
     dialogues = [
         # ── Vendor 1: 白糖粿 (Fried Sweet Rice Cake) ─────────────────
 
         ("n_l1_v1_greet", "d_l1_v1_001",
          "Hello!",
          "老板好！",
-         "audio-clips/n_l1_v1_greet.wav", "npc_beh_teung_guai"),
+         "audio-clips/n_l1_v1_greet.wav", "npc_beh_teung_guai", "npc_beh_teung_guai"),
 
         ("n_l1_v1_whatis", "d_l1_v1_002",
          "Excuse me, what is this?",
          "请问这是什么？",
-         "audio-clips/n_l1_v1_whatis.wav", "npc_beh_teung_guai"),
+         "audio-clips/n_l1_v1_whatis.wav", "npc_beh_teung_guai", "player"),
 
         ("n_l1_v1_explain", "d_l1_v1_003",
          "This is fried sweet rice cake!",
          "这是白糖粿！",
-         "audio-clips/n_l1_v1_explain", "npc_beh_teung_guai"),
+         "audio-clips/n_l1_v1_explain", "npc_beh_teung_guai", "npc_beh_teung_guai"),
 
         ("n_l1_v1_howsold", "d_l1_v1_004",
          "How do you sell this?",
          "怎么卖？",
-         "audio-clips/n_l1_v1_howsold.wav", "npc_beh_teung_guai"),
+         "audio-clips/n_l1_v1_howsold.wav", "npc_beh_teung_guai", "player"),
 
         ("n_l1_v1_price", "d_l1_v1_005",
          "$5 for one or $12 for three.",
          "五块一个或十二块三个。",
-         "audio-clips/n_l1_v1_price.wav", "npc_beh_teung_guai"),
+         "audio-clips/n_l1_v1_price.wav", "npc_beh_teung_guai", "npc_beh_teung_guai"),
 
         ("n_l1_v1_complete", "d_l1_v1_006",
          "Here you go! Enjoy!",
          "来，请慢用！",
-         "audio-clips/n_l1_v1_complete.wav", "npc_beh_teung_guai"),
+         "audio-clips/n_l1_v1_complete.wav", "npc_beh_teung_guai", "npc_beh_teung_guai"),
 
         # ── Vendor 2: 红豆饼 (Red Bean Pancake) ──────────────────────
 
         ("n_l1_v2_greet", "d_l1_v2_001",
          "Hello!",
          "老板好！",
-         "audio-clips/n_l1_v2_greet.wav", "npc_red_bean_pancake"),
+         "audio-clips/n_l1_v2_greet.wav", "npc_red_bean_pancake", "npc_red_bean_pancake"),
 
         ("n_l1_v2_whatis", "d_l1_v2_002",
          "Excuse me, what is this?",
          "请问这是什么？",
-         "audio-clips/n_l1_v2_whatis.wav", "npc_red_bean_pancake"),
+         "audio-clips/n_l1_v2_whatis.wav", "npc_red_bean_pancake", "player"),
 
         ("n_l1_v2_explain", "d_l1_v2_003",
          "This is red bean pancake!",
          "这是红豆饼！",
-         "audio-clips/n_l1_v2_explain.wav", "npc_red_bean_pancake"),
+         "audio-clips/n_l1_v2_explain.wav", "npc_red_bean_pancake", "npc_red_bean_pancake"),
 
         ("n_l1_v2_howsold", "d_l1_v2_004",
          "How do you sell this?",
          "怎么卖？",
-         "audio-clips/n_l1_v2_howsold.wav", "npc_red_bean_pancake"),
+         "audio-clips/n_l1_v2_howsold.wav", "npc_red_bean_pancake", "player"),
 
         ("n_l1_v2_price", "d_l1_v2_005",
          "$5 for one or $12 for three.",
          "五块一个或十二块三个。",
-         "audio-clips/n_l1_v2_price.wav", "npc_red_bean_pancake"),
+         "audio-clips/n_l1_v2_price.wav", "npc_red_bean_pancake", "npc_red_bean_pancake"),
 
         ("n_l1_v2_complete", "d_l1_v2_006",
          "Here you go! Enjoy!",
          "来，请慢用！",
-         "audio-clips/n_l1_v2_complete.wav", "npc_red_bean_pancake"),
+         "audio-clips/n_l1_v2_complete.wav", "npc_red_bean_pancake", "npc_red_bean_pancake"),
 
         # ── Vendor 3: 地瓜球 (Sweet Potato Balls) ────────────────────
 
         ("n_l1_v3_greet", "d_l1_v3_001",
          "Hello!",
          "老板好！",
-         "audio-clips/n_l1_v3_greet.wav", "npc_sweet_potato"),
+         "audio-clips/n_l1_v3_greet.wav", "npc_sweet_potato", "npc_sweet_potato"),
 
         ("n_l1_v3_whatis", "d_l1_v3_002",
          "Excuse me, what is this?",
          "请问这是什么？",
-         "audio-clips/n_l1_v3_whatis.wav", "npc_sweet_potato"),
+         "audio-clips/n_l1_v3_whatis.wav", "npc_sweet_potato", "player"),
 
         ("n_l1_v3_explain", "d_l1_v3_003",
          "This is sweet potato balls!",
          "这是地瓜球！",
-         "audio-clips/n_l1_v3_explain.wav", "npc_sweet_potato"),
+         "audio-clips/n_l1_v3_explain.wav", "npc_sweet_potato", "npc_sweet_potato"),
 
         ("n_l1_v3_howsold", "d_l1_v3_004",
          "How do you sell this?",
          "怎么卖？",
-         "audio-clips/n_l1_v3_howsold.wav", "npc_sweet_potato"),
+         "audio-clips/n_l1_v3_howsold.wav", "npc_sweet_potato", "player"),
 
         ("n_l1_v3_price", "d_l1_v3_005",
          "$5 for one or $12 for three.",
          "五块一个或十二块三个。",
-         "audio-clips/n_l1_v3_price.wav", "npc_sweet_potato"),
+         "audio-clips/n_l1_v3_price.wav", "npc_sweet_potato", "npc_sweet_potato"),
 
         ("n_l1_v3_complete", "d_l1_v3_006",
          "Here you go! Enjoy!",
          "来，请慢用！",
-         "audio-clips/n_l1_v3_complete.wav", "npc_sweet_potato"),
+         "audio-clips/n_l1_v3_complete.wav", "npc_sweet_potato", "npc_sweet_potato"),
     ]
     cursor.executemany(
-        "INSERT OR IGNORE INTO dialogues VALUES (?,?,?,?,?,?)", dialogues)
+        "INSERT OR IGNORE INTO dialogues VALUES (?,?,?,?,?,?,?)", dialogues)
     print(f"   Inserted {len(dialogues)} dialogue lines")
 
 
